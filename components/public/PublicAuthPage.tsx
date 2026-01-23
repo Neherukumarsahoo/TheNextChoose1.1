@@ -42,8 +42,21 @@ export function PublicAuthPage({ mode }: { mode: "login" | "signup" }) {
       })
 
       if (res.ok) {
-        toast.success("Account created! Please login.")
-        router.push('/auth/login')
+        const data = await res.json()
+        toast.success("Account created successfully!")
+
+        // Auto-login after signup
+        const loginResult = await signIn('credentials', {
+          email: formData.email,
+          password: formData.password,
+          redirect: false,
+        })
+
+        if (loginResult?.ok) {
+          router.push('/')
+        } else {
+          router.push('/auth/login')
+        }
       } else {
         const data = await res.json()
         toast.error(data.error || "Registration failed")
@@ -59,8 +72,13 @@ export function PublicAuthPage({ mode }: { mode: "login" | "signup" }) {
       if (result?.ok) {
         toast.success("Login successful!")
         router.push('/')
+      } else if (result?.error === 'CredentialsSignin') {
+        toast.error("Invalid credentials. Don't have an account?")
+        setTimeout(() => {
+          router.push('/auth/signup')
+        }, 2000)
       } else {
-        toast.error("Invalid credentials")
+        toast.error("Login failed")
       }
     }
 
@@ -141,7 +159,6 @@ export function PublicAuthPage({ mode }: { mode: "login" | "signup" }) {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
                   className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#8B1538] focus:border-transparent"
                   placeholder="john@example.com"
                 />

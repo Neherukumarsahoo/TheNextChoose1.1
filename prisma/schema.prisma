@@ -387,3 +387,40 @@ model ApprovalChain {
   @@index([entityType])
 }
 
+
+model PublicUser {
+  id            String   @id @default(cuid())
+  name          String
+  email         String   @unique
+  countryCode   String   @default("+91")
+  mobile        String
+  provider      String   @default("email")
+  providerId    String?
+  emailVerified Boolean  @default(false)
+  phoneVerified Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model ContactSubmission {
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  countryCode String   @default("+91")
+  mobile      String
+  service     String
+  budget      String
+  message     String
+  status      String   @default("new")
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model NewsletterSubscriber {
+  id String @id @default(cuid())
+  email String @unique
+  subscribed Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

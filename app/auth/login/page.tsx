@@ -1,5 +1,5 @@
 import { Metadata } from "next"
-import { PublicAuthPage } from "@/components/public/PublicAuthPage"
+import { LoginPage } from "@/components/public/LoginPage"
 
 export const metadata: Metadata = {
   title: "Login | TheNextChoose",
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 }
 
 export default function Page() {
-  return <PublicAuthPage mode="login" />
+  return <LoginPage />
 }

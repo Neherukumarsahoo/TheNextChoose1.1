@@ -34,6 +34,9 @@ const menuItems = [
     { href: "/campaigns", icon: Megaphone, label: "Campaigns" },
     { href: "/content-review", icon: FileText, label: "Content Review" },
     { href: "/payments", icon: DollarSign, label: "Payments" },
+    { href: "/contact-submissions", icon: FileText, label: "Contact Submissions" },
+    { href: "/public-users", icon: Users, label: "Public Users" },
+    { href: "/newsletter-subscribers", icon: FileText, label: "Newsletter" },
 ]
 
 export function Sidebar() {

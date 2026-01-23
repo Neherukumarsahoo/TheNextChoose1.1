@@ -1,10 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import bcrypt from 'bcryptjs'
 
 export async function POST(req: NextRequest) {
   try {
     const { name, email, countryCode, mobile, password } = await req.json()
+
+    // Validate required fields
+    if (!name || !email || !mobile || !password) {
+      return NextResponse.json(
+        { error: 'Missing required fields' },
+        { status: 400 }
+      )
+    }
 
     // Check if user exists
     const existingUser = await prisma.publicUser.findUnique({
@@ -18,15 +25,12 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10)
-
-    // Create user
+    // Create user (password will be handled by NextAuth)
     const user = await prisma.publicUser.create({
       data: {
         name,
         email,
-        countryCode,
+        countryCode: countryCode || '+91',
         mobile,
         provider: 'email',
         emailVerified: false,
@@ -41,7 +45,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error('Registration error:', error)
     return NextResponse.json(
-      { error: 'Registration failed' },
+      { error: 'Registration failed. Please try again.' },
       { status: 500 }
     )
   }
