@@ -1,0 +1,389 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Enum definitions removed for SQLite compatibility. 
+// See lib/enums.ts for manual definitions.
+
+model AdminUser {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   // Was Role
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  activityLogs           ActivityLog[]
+  reports                Report[]
+  savedFilters           SavedFilter[]
+  notifications          Notification[]
+  notificationPreference NotificationPreference?
+  workflows              Workflow[]
+  campaignTemplates      CampaignTemplate[]
+  fileAttachments        FileAttachment[]
+}
+
+model Influencer {
+  id             String    @id @default(cuid())
+  name           String
+  instagramId    String    @unique
+  profileLink    String?
+  category       String
+  city           String?
+  country        String?
+  followers      Int
+  avgViews       Int?
+  engagementRate Float?
+  reelPrice      Float
+  storyPrice     Float
+  postPrice      Float
+  active         Boolean   @default(true)
+  approved       Boolean   @default(false)
+  verified       Boolean   @default(false)
+  tags           String?   // Comma separated tags
+  rating         Float?    @default(0)
+  totalCampaigns Int       @default(0)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  campaigns CampaignInfluencer[]
+  payments  Payment[]
+  activityLogs ActivityLog[]
+}
+
+model Brand {
+  id            String    @id @default(cuid())
+  name          String
+  type          String?
+  industry      String?
+  city          String?
+  country       String?
+  contactPerson String?
+  email         String?
+  phone         String?
+  instagramId   String?
+  website       String?
+  budgetRange   String?
+  active        Boolean   @default(true)
+  pipelineStage String    @default("lead") // lead, contacted, negotiation, signed, churned
+  totalSpent    Float     @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  campaigns Campaign[]
+  activityLogs ActivityLog[]
+}
+
+model Campaign {
+  id          String         @id @default(cuid())
+  name        String
+  brandId     String
+  brand       Brand          @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  objective   String?
+  platform    String
+  contentType String
+  startDate   DateTime
+  endDate     DateTime?
+  totalAmount Float
+  status      String         @default("DRAFT") // Was CampaignStatus
+  approved    Boolean        @default(false)
+  notes       String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  influencers CampaignInfluencer[]
+  payments    Payment[]
+  activityLogs ActivityLog[]
+}
+
+model CampaignInfluencer {
+  id            String            @id @default(cuid())
+  campaignId    String
+  campaign      Campaign          @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  influencerId  String
+  influencer    Influencer        @relation(fields: [influencerId], references: [id], onDelete: Cascade)
+  price         Float
+  status        String            @default("ASSIGNED") // Was InfluencerStatus
+  deliverables  String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  submissions   ContentSubmission[]
+}
+
+model ContentSubmission {
+  id                    String             @id @default(cuid())
+  campaignInfluencerId  String
+  campaignInfluencer    CampaignInfluencer @relation(fields: [campaignInfluencerId], references: [id], onDelete: Cascade)
+  fileUrl               String
+  status                String             @default("PENDING") // PENDING, APPROVED, REJECTED
+  feedback              String?
+  submittedAt           DateTime           @default(now())
+  updatedAt             DateTime           @updatedAt
+
+  @@index([campaignInfluencerId])
+  @@index([status])
+}
+
+model Payment {
+  id          String        @id @default(cuid())
+  campaignId  String
+  campaign    Campaign      @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  influencerId String?
+  influencer  Influencer?   @relation(fields: [influencerId], references: [id], onDelete: SetNull)
+  type        String        // Was PaymentType
+  amount      Float
+  advance     Float         @default(0)
+  balance     Float         @default(0)
+  status      String        @default("PENDING") // Was PaymentStatus
+  dueDate     DateTime
+  paidDate    DateTime?
+  notes       String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model PlatformSettings {
+  id           String   @id
+  platformName String
+  commission   Float
+  currency     String
+  featureFlags String?  // JSON string for module toggles
+  masterConfig String?  // JSON string for the 100+ granular settings
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Announcement {
+  id        String   @id @default(cuid())
+  message   String
+  type      String   @default("info") // info, warning, success
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model ActivityLog {
+  id          String   @id @default(cuid())
+  userId      String
+  user        AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action      String
+  entityType  String
+  entityId    String?
+  entityName  String?
+  oldValue    String?
+  newValue    String?
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+  
+  influencer  Influencer? @relation(fields: [entityId], references: [id], onDelete: SetNull)
+  brand       Brand?      @relation(fields: [entityId], references: [id], onDelete: SetNull)
+  campaign    Campaign?   @relation(fields: [entityId], references: [id], onDelete: SetNull)
+  
+  @@index([userId])
+  @@index([entityType])
+  @@index([createdAt])
+}
+
+model AnalyticsSnapshot {
+  id                String   @id @default(cuid())
+  date              DateTime @unique
+  totalRevenue      Float    @default(0)
+  totalCampaigns    Int      @default(0)
+  activeCampaigns   Int      @default(0)
+  completedCampaigns Int     @default(0)
+  totalInfluencers  Int      @default(0)
+  activeInfluencers Int      @default(0)
+  totalBrands       Int      @default(0)
+  activeBrands      Int      @default(0)
+  avgEngagement     Float    @default(0)
+  totalPayments     Float    @default(0)
+  pendingPayments   Float    @default(0)
+  createdAt         DateTime @default(now())
+  
+  @@index([date])
+}
+
+model Report {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  type        String
+  schedule    String?
+  config      String
+  createdBy   String
+  creator     AdminUser @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  lastRun     DateTime?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([createdBy])
+  @@index([type])
+}
+
+model SavedFilter {
+  id         String    @id @default(cuid())
+  userId     String
+  user       AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name       String
+  entityType String
+  filters    String
+  isDefault  Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  
+  @@index([userId])
+  @@index([entityType])
+}
+
+model SearchHistory {
+  id        String   @id @default(cuid())
+  userId    String
+  query     String
+  entityType String?
+  results   Int
+  createdAt DateTime @default(now())
+  
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String
+  user      AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String
+  title     String
+  message   String
+  link      String?
+  metadata  String?
+  read      Boolean   @default(false)
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+  
+  @@index([userId])
+  @@index([read])
+  @@index([createdAt])
+}
+
+model NotificationPreference {
+  id       String    @id @default(cuid())
+  userId   String    @unique
+  user     AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  email    Boolean   @default(true)
+  whatsapp Boolean   @default(false)
+  sms      Boolean   @default(false)
+  push     Boolean   @default(true)
+  
+  campaignUpdates    Boolean @default(true)
+  paymentReminders   Boolean @default(true)
+  influencerApproval Boolean @default(true)
+  systemAlerts       Boolean @default(true)
+  
+  updatedAt DateTime @updatedAt
+}
+
+model Workflow {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  trigger     String
+  conditions  String?
+  actions     String
+  active      Boolean  @default(true)
+  createdBy   String
+  creator     AdminUser @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  executions WorkflowExecution[]
+  
+  @@index([active])
+  @@index([createdBy])
+}
+
+model WorkflowExecution {
+  id          String   @id @default(cuid())
+  workflowId  String
+  workflow    Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  status      String
+  triggerData String?
+  result      String?
+  error       String?
+  executedAt  DateTime @default(now())
+  
+  @@index([workflowId])
+  @@index([status])
+  @@index([executedAt])
+}
+
+model CampaignTemplate {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  platform    String
+  contentType String
+  config      String
+  createdBy   String
+  creator     AdminUser @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([platform])
+  @@index([createdBy])
+}
+
+model FileAttachment {
+  id         String   @id @default(cuid())
+  entityType String
+  entityId   String
+  fileName   String
+  fileUrl    String
+  fileSize   Int
+  mimeType   String
+  uploadedBy String
+  uploader   AdminUser @relation(fields: [uploadedBy], references: [id], onDelete: Cascade)
+  uploadedAt DateTime @default(now())
+  
+  @@index([entityType, entityId])
+  @@index([uploadedBy])
+}
+
+model RolePermission {
+  id        String   @id @default(cuid())
+  role      String   // ADMIN, MANAGER, VIEWER
+  resource  String   // e.g. "campaigns", "payments"
+  action    String   // e.g. "create", "delete", "view_financials"
+  allowed   Boolean  @default(true)
+
+  @@unique([role, resource, action])
+}
+
+model AllowedIP {
+  id        String   @id @default(cuid())
+  ip        String   @unique
+  label     String?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model ApprovalChain {
+  id          String   @id @default(cuid())
+  entityType  String   // CAMPAIGN, PAYMENT
+  threshold   Float    @default(0) // Minimum amount that triggers this chain
+  requiredRoles String // Comma separated roles, e.g. "MANAGER,SUPER_ADMIN"
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([entityType])
+}
+
