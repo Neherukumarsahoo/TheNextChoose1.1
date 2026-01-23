@@ -65,6 +65,18 @@ export function Navbar() {
           <div className="hidden md:flex items-center gap-3">
             <ThemeToggle />
             <Link
+              href="/auth/login"
+              className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-[#8B1538] dark:hover:text-[#A91D47] font-medium transition-smooth"
+            >
+              Login
+            </Link>
+            <Link
+              href="/auth/signup"
+              className="px-4 py-2 border-2 border-[#8B1538] text-[#8B1538] dark:text-[#A91D47] rounded-lg font-medium transition-smooth hover:bg-[#8B1538] hover:text-white dark:hover:bg-[#A91D47]"
+            >
+              Sign Up
+            </Link>
+            <Link
               href="/contact"
               className="px-6 py-2 bg-gradient-to-r from-[#8B1538] to-[#A91D47] text-white rounded-lg font-medium transition-smooth hover:shadow-lg hover:shadow-[#8B1538]/50 hover:scale-105"
             >

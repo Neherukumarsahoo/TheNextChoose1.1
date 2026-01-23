@@ -203,10 +203,28 @@ export function BlogPage() {
           <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
             Subscribe to our newsletter for the latest insights and industry trends
           </p>
-          <form className="max-w-md mx-auto flex gap-3">
+          <form
+            className="max-w-md mx-auto flex gap-3"
+            onSubmit={(e) => {
+              e.preventDefault()
+              const formData = new FormData(e.currentTarget)
+              const email = formData.get('email') as string
+              const emailRegex = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/
+              if (!emailRegex.test(email)) {
+                alert('Please enter a valid email address')
+                return
+              }
+              // TODO: Submit to newsletter API
+              alert('Thank you for subscribing!')
+              e.currentTarget.reset()
+            }}
+          >
             <input
               type="email"
+              name="email"
               placeholder="Enter your email"
+              required
+              pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
               className="flex-1 px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#8B1538] focus:border-transparent"
             />
             <button
