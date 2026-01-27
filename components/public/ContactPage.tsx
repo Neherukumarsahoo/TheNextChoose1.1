@@ -269,10 +269,50 @@ export function ContactPage() {
                     className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#8B1538] focus:border-transparent transition-smooth"
                   >
                     <option value="">Select budget range</option>
-                    <option value="small">$1,000 - $5,000</option>
-                    <option value="medium">$5,000 - $20,000</option>
-                    <option value="large">$20,000 - $50,000</option>
-                    <option value="enterprise">$50,000+</option>
+                    {(() => {
+                      let ranges = [
+                        { label: "₹5,000 - ₹20,000", value: "low" },
+                        { label: "₹20,000 - ₹50,000", value: "medium" },
+                        { label: "₹50,000 - ₹1,00,000", value: "high" },
+                        { label: "₹1,00,000+", value: "enterprise" },
+                      ];
+
+                      if (formData.service === 'video') {
+                        ranges = [
+                          { label: "₹3,000 - ₹10,000", value: "micro" },
+                          { label: "₹10,000 - ₹30,000", value: "standard" },
+                          { label: "₹30,000 - ₹50,000", value: "premium" },
+                          { label: "₹50,000+", value: "enterprise" },
+                        ]
+                      } else if (formData.service === 'web') {
+                        ranges = [
+                          { label: "₹15,000 - ₹30,000", value: "basic" },
+                          { label: "₹30,000 - ₹80,000", value: "standard" },
+                          { label: "₹80,000 - ₹2,00,000", value: "premium" },
+                          { label: "₹2,00,000+", value: "custom" },
+                        ]
+                      } else if (formData.service === 'ai') {
+                        ranges = [
+                          { label: "₹25,000 - ₹50,000", value: "pilot" },
+                          { label: "₹50,000 - ₹1,50,000", value: "integration" },
+                          { label: "₹1,50,000 - ₹5,00,000", value: "enterprise" },
+                          { label: "₹5,00,000+", value: "custom" },
+                        ]
+                      } else if (formData.service === '3d') {
+                        ranges = [
+                          { label: "₹10,000 - ₹25,000", value: "asset" },
+                          { label: "₹25,000 - ₹75,000", value: "scene" },
+                          { label: "₹75,000 - ₹2,00,000", value: "complex" },
+                          { label: "₹2,00,000+", value: "production" },
+                        ]
+                      }
+
+                      return ranges.map(range => (
+                        <option key={range.value} value={range.value}>
+                          {range.label}
+                        </option>
+                      ))
+                    })()}
                   </select>
                 </div>
               </div>

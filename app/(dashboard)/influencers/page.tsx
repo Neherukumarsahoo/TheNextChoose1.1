@@ -134,7 +134,7 @@ export default async function InfluencersPage(props: SearchParamsProps) {
                                                     {influencer.active ? "Active" : "Inactive"}
                                                 </span>
                                             </td>
-// Re-adding verify/reject logic in the table
+
                                             {canApprove && (
                                                 <td className="p-3">
                                                     <div className="flex flex-col gap-1">

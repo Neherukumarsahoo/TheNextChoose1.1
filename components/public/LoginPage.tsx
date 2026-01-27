@@ -9,10 +9,12 @@ import { toast } from "sonner"
 
 export function LoginPage() {
   const router = useRouter()
+  const [loginMethod, setLoginMethod] = useState<'phone' | 'email'>('phone')
   const [formData, setFormData] = useState({
     name: "",
     countryCode: "+91",
     mobile: "",
+    email: "",
     password: "",
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -21,24 +23,48 @@ export function LoginPage() {
     setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
   }
 
-  const handlePhoneLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
 
     try {
-      // Login with phone number (creates account if doesn't exist)
-      const res = await fetch('/api/public-auth/phone-login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      })
+      if (loginMethod === 'email') {
+        // Check for specific admin email
+        if (formData.email === 'neherukumar1@gmail.com') {
+          const result = await signIn("credentials", {
+            email: formData.email,
+            password: formData.password,
+            redirect: false,
+          })
 
-      if (res.ok) {
-        toast.success("Login successful!")
-        router.push('/')
+          if (result?.error) {
+            toast.error("Invalid credentials")
+          } else {
+            toast.success("Admin login successful!")
+            router.push("/dashboard")
+          }
+        } else {
+          // For now, only specific admin email is allowed for email login
+          // or we could allow other logic here. 
+          // Based on requirements: "if i enter other thing then it will not redirect to admin pannel"
+          toast.error("Invalid email for admin access")
+        }
+
       } else {
-        const data = await res.json()
-        toast.error(data.error || "Login failed")
+        // Phone login logic
+        const res = await fetch('/api/public-auth/phone-login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
+        })
+
+        if (res.ok) {
+          toast.success("Login successful!")
+          router.push('/')
+        } else {
+          const data = await res.json()
+          toast.error(data.error || "Login failed")
+        }
       }
     } catch (error) {
       toast.error("An error occurred")
@@ -67,6 +93,28 @@ export function LoginPage() {
         </div>
 
         <div className="glass-strong rounded-3xl p-8 border border-white/20">
+          {/* Toggle Login Method */}
+          <div className="flex p-1 bg-gray-100 dark:bg-gray-800 rounded-xl mb-6">
+            <button
+              onClick={() => setLoginMethod('phone')}
+              className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${loginMethod === 'phone'
+                  ? 'bg-white dark:bg-gray-700 shadow-sm text-[#8B1538] dark:text-white'
+                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                }`}
+            >
+              Phone Login
+            </button>
+            <button
+              onClick={() => setLoginMethod('email')}
+              className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${loginMethod === 'email'
+                  ? 'bg-white dark:bg-gray-700 shadow-sm text-[#8B1538] dark:text-white'
+                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                }`}
+            >
+              Email Login
+            </button>
+          </div>
+
           {/* Google Login */}
           <button
             onClick={handleGoogleSignIn}
@@ -87,58 +135,80 @@ export function LoginPage() {
             <div className="flex-1 h-px bg-gray-300 dark:bg-gray-700" />
           </div>
 
-          {/* Phone Number Login */}
-          <form onSubmit={handlePhoneLogin} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Full Name *
-              </label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#8B1538] focus:border-transparent"
-                  placeholder="John Doe"
-                />
-              </div>
-            </div>
+          {/* Login Form */}
+          <form onSubmit={handleLogin} className="space-y-4">
+            {loginMethod === 'phone' ? (
+              <>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Full Name *
+                  </label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      required
+                      className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#8B1538] focus:border-transparent"
+                      placeholder="John Doe"
+                    />
+                  </div>
+                </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Mobile Number *
-              </label>
-              <div className="flex gap-2">
-                <select
-                  name="countryCode"
-                  value={formData.countryCode}
-                  onChange={handleChange}
-                  className="w-24 px-2 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#8B1538] focus:border-transparent"
-                >
-                  <option value="+91">🇮🇳 +91</option>
-                  <option value="+1">🇺🇸 +1</option>
-                  <option value="+44">🇬🇧 +44</option>
-                  <option value="+971">🇦🇪 +971</option>
-                </select>
-                <div className="relative flex-1">
-                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Mobile Number *
+                  </label>
+                  <div className="flex gap-2">
+                    <select
+                      name="countryCode"
+                      value={formData.countryCode}
+                      onChange={handleChange}
+                      className="w-24 px-2 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#8B1538] focus:border-transparent"
+                    >
+                      <option value="+91">🇮🇳 +91</option>
+                      <option value="+1">🇺🇸 +1</option>
+                      <option value="+44">🇬🇧 +44</option>
+                      <option value="+971">🇦🇪 +971</option>
+                    </select>
+                    <div className="relative flex-1">
+                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                      <input
+                        type="tel"
+                        name="mobile"
+                        value={formData.mobile}
+                        onChange={handleChange}
+                        required
+                        pattern="[0-9]{10}"
+                        maxLength={10}
+                        className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#8B1538] focus:border-transparent"
+                        placeholder="9876543210"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Email Address *
+                </label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <input
-                    type="tel"
-                    name="mobile"
-                    value={formData.mobile}
+                    type="email"
+                    name="email"
+                    value={formData.email}
                     onChange={handleChange}
                     required
-                    pattern="[0-9]{10}"
-                    maxLength={10}
                     className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#8B1538] focus:border-transparent"
-                    placeholder="9876543210"
+                    placeholder="admin@example.com"
                   />
+                  </div>
                 </div>
-              </div>
-            </div>
+            )}
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -157,9 +227,11 @@ export function LoginPage() {
                   placeholder="••••••••"
                 />
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                New user? We'll create an account for you automatically
-              </p>
+              {loginMethod === 'phone' && (
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  New user? We'll create an account for you automatically
+                </p>
+              )}
             </div>
 
             <button
@@ -174,7 +246,7 @@ export function LoginPage() {
                 </>
               ) : (
                 <>
-                  Login
+                    {loginMethod === 'phone' ? 'Login / Sign Up' : 'Login'}
                   <ArrowRight className="w-5 h-5" />
                 </>
               )}

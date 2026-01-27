@@ -3,7 +3,7 @@ import { Role } from "@/lib/enums"
 
 export const authConfig = {
     pages: {
-        signIn: "/login",
+        signIn: "/auth/login",
     },
     callbacks: {
         async jwt({ token, user }) {

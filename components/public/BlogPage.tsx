@@ -5,6 +5,7 @@ import { gsap } from "gsap"
 import { Navbar } from "./Navbar"
 import { Footer } from "./Footer"
 import { Calendar, Clock, ArrowRight, Tag } from "lucide-react"
+import Link from "next/link"
 
 const categories = ["All", "Trends", "Tutorials", "Case Studies", "News"]
 
@@ -65,14 +66,33 @@ const blogPosts = [
   },
 ]
 
+import { useCMS } from "@/components/cms/CMSProvider"
+
 export function BlogPage() {
+  const config = useCMS()
   const [selectedCategory, setSelectedCategory] = useState("All")
   const headerRef = useRef<HTMLDivElement>(null)
   const cardsRef = useRef<(HTMLDivElement | null)[]>([])
 
+  // Get Published Posts from CMS
+  const blogPosts = (config?.blogPosts || []).filter((p: any) => p.status === 'published').map((p: any) => ({
+    id: p.id,
+    slug: p.slug,
+    title: p.title,
+    excerpt: p.excerpt || "No excerpt found.",
+    category: p.tags?.[0] || "General",
+    date: p.publishedAt,
+    readTime: "5 min read", // Placeholder or calculate based on content length
+    image: p.coverImage || "from-gray-700 to-gray-900", // Handle gradient vs image url logic
+    isUrl: p.coverImage?.startsWith("http") || p.coverImage?.startsWith("data:")
+  }))
+
+  // Dynamic Categories based on posts
+  const uniqueCategories = ["All", ...Array.from(new Set(blogPosts.map((p: any) => p.category)))] as string[]
+
   const filteredPosts = selectedCategory === "All"
     ? blogPosts
-    : blogPosts.filter(post => post.category === selectedCategory)
+    : blogPosts.filter((post: any) => post.category === selectedCategory)
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -83,17 +103,7 @@ export function BlogPage() {
         ease: "power3.out",
       })
 
-      gsap.from(cardsRef.current, {
-        y: 80,
-        opacity: 0,
-        duration: 0.6,
-        stagger: 0.1,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: cardsRef.current[0],
-          start: "top 80%",
-        },
-      })
+
     })
 
     return () => ctx.revert()
@@ -117,7 +127,7 @@ export function BlogPage() {
 
           {/* Category Filter */}
           <div className="flex flex-wrap justify-center gap-3">
-            {categories.map((category) => (
+            {uniqueCategories.map((category) => (
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
@@ -144,9 +154,13 @@ export function BlogPage() {
               className="group glass-strong rounded-2xl overflow-hidden border border-white/20 hover:shadow-2xl transition-smooth cursor-pointer"
             >
               {/* Featured Image Placeholder */}
-              <div className={`aspect-video bg-gradient-to-br ${post.image} flex items-center justify-center relative overflow-hidden`}>
+              <div className={`aspect-video bg-gradient-to-br ${!post.isUrl ? post.image : 'from-gray-100 to-gray-200'} flex items-center justify-center relative overflow-hidden`}>
+                {post.isUrl ? (
+                  <img src={post.image} alt={post.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                ) : (
+                  <div className="text-white text-6xl font-bold opacity-20">{post.title.charAt(0)}</div>
+                )}
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-smooth" />
-                <div className="text-white text-6xl font-bold opacity-20">{post.id}</div>
               </div>
 
               {/* Content */}
@@ -177,10 +191,10 @@ export function BlogPage() {
                     <Calendar className="w-3 h-3" />
                     {new Date(post.date).toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'})}
                   </div>
-                  <button className="inline-flex items-center gap-1 text-[#8B1538] dark:text-[#A91D47] font-medium text-sm group-hover:gap-2 transition-smooth">
+                  <Link href={`/blog/${post.slug || post.id}`} className="inline-flex items-center gap-1 text-[#8B1538] dark:text-[#A91D47] font-medium text-sm group-hover:gap-2 transition-smooth">
                     Read More
                     <ArrowRight className="w-4 h-4" />
-                  </button>
+                  </Link>
                 </div>
               </div>
             </article>

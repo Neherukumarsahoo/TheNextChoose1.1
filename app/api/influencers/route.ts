@@ -35,6 +35,7 @@ export async function POST(request: Request) {
                 name: body.name,
                 instagramId: body.instagramId,
                 profileLink: body.profileLink,
+                serviceType: body.serviceType || "Influencer Marketing", // Added
                 category: body.category,
                 city: body.city,
                 country: body.country,

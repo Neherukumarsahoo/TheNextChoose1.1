@@ -53,17 +53,7 @@ export function AboutPage() {
         },
       })
 
-      gsap.from(teamRef.current?.children || [], {
-        scale: 0.8,
-        opacity: 0,
-        duration: 0.6,
-        stagger: 0.1,
-        ease: "back.out(1.7)",
-        scrollTrigger: {
-          trigger: teamRef.current,
-          start: "top 80%",
-        },
-      })
+
     })
 
     return () => ctx.revert()

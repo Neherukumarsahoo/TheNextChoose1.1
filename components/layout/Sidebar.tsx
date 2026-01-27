@@ -39,7 +39,13 @@ const menuItems = [
     { href: "/newsletter-subscribers", icon: FileText, label: "Newsletter" },
 ]
 
-export function Sidebar() {
+interface SidebarProps {
+    className?: string
+    isMobile?: boolean
+    onNavigate?: () => void
+}
+
+export function Sidebar({ className, isMobile = false, onNavigate }: SidebarProps) {
     const pathname = usePathname()
     const { data: session } = useSession()
     const userRole = session?.user?.role
@@ -48,11 +54,14 @@ export function Sidebar() {
 
     useEffect(() => {
         setMounted(true)
-        const stored = localStorage.getItem("sidebar-collapsed")
-        if (stored === "true") setCollapsed(true)
-    }, [])
+        if (!isMobile) {
+            const stored = localStorage.getItem("sidebar-collapsed")
+            if (stored === "true") setCollapsed(true)
+        }
+    }, [isMobile])
 
     const toggleSidebar = () => {
+        if (isMobile) return
         const newState = !collapsed
         setCollapsed(newState)
         localStorage.setItem("sidebar-collapsed", String(newState))
@@ -66,7 +75,8 @@ export function Sidebar() {
         <TooltipProvider delayDuration={0}>
             <div className={cn(
                 "flex h-full flex-col bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transition-all duration-300 relative",
-                collapsed ? "w-20" : "w-64"
+                isMobile ? "w-full border-none" : (collapsed ? "w-20" : "w-64"),
+                className
             )}>
                 <div className={cn(
                     "flex h-16 items-center border-b border-gray-200 dark:border-gray-800",
@@ -112,6 +122,7 @@ export function Sidebar() {
                             <Link
                                 key={item.label}
                                 href={item.href}
+                                onClick={onNavigate}
                                 className={cn(
                                     "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                                     isActive
@@ -134,6 +145,23 @@ export function Sidebar() {
                                     <Tooltip>
                                         <TooltipTrigger asChild>
                                             <Link
+                                                href="/cms"
+                                                className={cn(
+                                                    "flex items-center justify-center rounded-lg py-2 text-sm font-medium transition-colors h-10 w-10 mx-auto mb-1",
+                                                    pathname === "/cms"
+                                                        ? "bg-purple-50 text-purple-700 dark:bg-purple-900/20 dark:text-purple-400"
+                                                        : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                                                )}
+                                            >
+                                                <Zap className="h-5 w-5 text-purple-600" />
+                                                <span className="sr-only">Website CMS</span>
+                                            </Link>
+                                        </TooltipTrigger>
+                                        <TooltipContent side="right">Website CMS</TooltipContent>
+                                    </Tooltip>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <Link
                                                 href="/settings"
                                                 className={cn(
                                                     "flex items-center justify-center rounded-lg py-2 text-sm font-medium transition-colors h-10 w-10 mx-auto mb-1",
@@ -148,79 +176,67 @@ export function Sidebar() {
                                         </TooltipTrigger>
                                         <TooltipContent side="right">Settings</TooltipContent>
                                     </Tooltip>
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <Link
-                                                href="/master-config"
-                                                className={cn(
-                                                    "flex items-center justify-center rounded-lg py-2 text-sm font-medium transition-colors h-10 w-10 mx-auto",
-                                                    pathname === "/master-config"
-                                                        ? "bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400"
-                                                        : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
-                                                )}
-                                            >
-                                                <Zap className="h-5 w-5" />
-                                                <span className="sr-only">Master Config</span>
-                                            </Link>
-                                        </TooltipTrigger>
-                                        <TooltipContent side="right">Master Config</TooltipContent>
-                                    </Tooltip>
                                 </>
                             ) : (
                                 <>
                                     <Link
-                                        href="/settings"
-                                        className={cn(
-                                            "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                                            pathname === "/settings"
-                                                ? "bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400"
-                                                : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
-                                        )}
-                                    >
-                                        <Settings className="h-5 w-5" />
-                                        Settings
-                                    </Link>
-                                    <Link
-                                        href="/admin-users"
-                                        className={cn(
-                                            "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                                            pathname === "/admin-users"
-                                                ? "bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400"
-                                                : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
-                                        )}
-                                    >
-                                        <UserCog className="h-5 w-5" />
-                                        Admin Users
-                                    </Link>
-                                    <Link
-                                        href="/master-config"
-                                        className={cn(
-                                            "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors font-bold",
-                                            pathname === "/master-config"
-                                                ? "bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400"
-                                                : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
-                                        )}
-                                    >
-                                        <Zap className="h-5 w-5 text-red-600" />
-                                        Master Config
-                                    </Link>
+                                            href="/cms"
+                                            onClick={onNavigate}
+                                            className={cn(
+                                                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors font-bold",
+                                                pathname === "/cms"
+                                                    ? "bg-purple-50 text-purple-700 dark:bg-purple-900/20 dark:text-purple-400"
+                                                    : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                                            )}
+                                        >
+                                            <Zap className="h-5 w-5 text-purple-600" />
+                                            Website CMS
+                                        </Link>
+                                        <Link
+                                            href="/settings"
+                                            onClick={onNavigate}
+                                            className={cn(
+                                                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                                                pathname === "/settings"
+                                                    ? "bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400"
+                                                    : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                                            )}
+                                        >
+                                            <Settings className="h-5 w-5" />
+                                            Settings
+                                        </Link>
+                                        <Link
+                                            href="/admin-users"
+                                            onClick={onNavigate}
+                                            className={cn(
+                                                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                                                pathname === "/admin-users"
+                                                    ? "bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400"
+                                                    : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                                            )}
+                                        >
+                                            <UserCog className="h-5 w-5" />
+                                            Admin Users
+                                        </Link>
                                 </>
                             )}
                         </>
                     )}
                 </nav>
 
-                <div className={cn("p-4 border-t border-gray-200 dark:border-gray-800", collapsed && "flex justify-center")}>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        className={cn("w-full gap-2", collapsed && "w-10 h-10 p-0 justify-center")}
-                        onClick={toggleSidebar}
-                    >
-                        {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-                        {!collapsed && "Collapse Sidebar"}
-                    </Button>
-                </div>
+                {!isMobile && (
+                    <div className={cn("p-4 border-t border-gray-200 dark:border-gray-800", collapsed && "flex justify-center")}>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className={cn("w-full gap-2", collapsed && "w-10 h-10 p-0 justify-center")}
+                            onClick={toggleSidebar}
+                        >
+                            {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+                            {!collapsed && "Collapse Sidebar"}
+                        </Button>
+                    </div>
+                )}
             </div>
         </TooltipProvider>
     )

@@ -25,13 +25,15 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { toast } from "sonner"
-import { Trash2 } from "lucide-react"
+
+import { Trash2, Eye, FileSignature } from "lucide-react"
 
 interface Brand {
     id: string
     name: string
     type: string | null
     industry: string | null
+    serviceType: string // Added
     city: string | null
     country: string | null
     contactPerson: string | null
@@ -57,6 +59,7 @@ export function BrandForm({ brand, mode }: BrandFormProps) {
         name: brand?.name || "",
         type: brand?.type || "",
         industry: brand?.industry || "",
+        serviceType: brand?.serviceType || "General", // Added
         city: brand?.city || "",
         country: brand?.country || "",
         contactPerson: brand?.contactPerson || "",
@@ -140,6 +143,31 @@ export function BrandForm({ brand, mode }: BrandFormProps) {
                             required
                         />
                     </div>
+
+                    {/* New Service Type Dropdown */}
+                    <div>
+                        <Label htmlFor="serviceType">Service Type</Label>
+                        <Select
+                            value={formData.serviceType}
+                            onValueChange={(value) => setFormData(prev => ({ ...prev, serviceType: value }))}
+                        >
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select Service" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="General">General</SelectItem>
+                                <SelectItem value="Influencer Marketing">Influencer Marketing</SelectItem>
+                                <SelectItem value="Video Production">Video Production</SelectItem>
+                                <SelectItem value="Web Development">Web Development</SelectItem>
+                                <SelectItem value="AI Automation">AI Automation</SelectItem>
+                                <SelectItem value="3D Ads">3D Ads</SelectItem>
+                                <SelectItem value="Real Estate 3D">Real Estate 3D</SelectItem>
+                                <SelectItem value="3D Mockups">3D Mockups</SelectItem>
+                                <SelectItem value="3D Configurator">3D Configurator</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <Label htmlFor="type">Brand Type</Label>
@@ -299,6 +327,17 @@ export function BrandForm({ brand, mode }: BrandFormProps) {
                         Cancel
                     </Button>
                 </div>
+
+                {mode === "edit" && (
+                    <div className="flex gap-2">
+                        <Button type="button" variant="outline" onClick={() => toast.info("Opening Client Portal Simulation...")}>
+                            <Eye className="w-4 h-4 mr-2" /> View as Client
+                        </Button>
+                        <Button type="button" variant="outline" onClick={() => toast.success("Contract sent via DocuSign!")}>
+                            <FileSignature className="w-4 h-4 mr-2" /> Send Contract
+                        </Button>
+                    </div>
+                )}
 
                 {mode === "edit" && brand && (
                     <AlertDialog>

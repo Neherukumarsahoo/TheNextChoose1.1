@@ -13,6 +13,7 @@ import {
 import { LogOut, User } from "lucide-react"
 import { NotificationCenter } from "@/components/notifications/NotificationCenter"
 import { ThemeToggle } from "@/components/theme/ThemeToggle"
+import { MobileSidebar } from "@/components/layout/MobileSidebar"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 import {
@@ -53,9 +54,10 @@ export function Header() {
     }
 
     return (
-        <header className="h-16 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 flex items-center justify-between px-6">
-            <div className="flex flex-col gap-1">
-                <Breadcrumb>
+        <header className="h-16 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 flex items-center justify-between px-4 lg:px-6">
+            <div className="flex items-center gap-4">
+                <MobileSidebar />
+                <Breadcrumb className="hidden md:flex">
                     <BreadcrumbList>
                         {generateBreadcrumbs()}
                     </BreadcrumbList>
@@ -88,7 +90,7 @@ export function Header() {
                             </div>
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/login" })} className="text-red-600 focus:text-red-600">
+                        <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/auth/login" })} className="text-red-600 focus:text-red-600">
                             <LogOut className="mr-2 h-4 w-4" />
                             Sign Out
                         </DropdownMenuItem>

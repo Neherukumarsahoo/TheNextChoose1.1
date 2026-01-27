@@ -2,9 +2,13 @@
 
 import { useEffect, useRef } from "react"
 import { gsap } from "gsap"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { Navbar } from "./Navbar"
 import { Footer } from "./Footer"
+import Image from "next/image"
 import { Users, Video, Zap, Globe, Box, Building, Package, ShoppingCart, ArrowRight, Check } from "lucide-react"
+
+gsap.registerPlugin(ScrollTrigger)
 
 const services = [
   {
@@ -22,6 +26,7 @@ const services = [
     ],
     benefits: "Average 3.5x ROI on influencer campaigns",
     color: "from-purple-500 to-pink-500",
+    image: "/services/service_influencer_1769254567416.png",
   },
   {
     id: "video",
@@ -38,6 +43,7 @@ const services = [
     ],
     benefits: "Delivered 10,000+ hours of edited content",
     color: "from-blue-500 to-cyan-500",
+    image: "/services/service_video_editing_1769254583423.png",
   },
   {
     id: "ai",
@@ -54,6 +60,7 @@ const services = [
     ],
     benefits: "Reduce operational costs by up to 60%",
     color: "from-yellow-500 to-orange-500",
+    image: "/services/service_ai_automation_1769254601186.png",
   },
   {
     id: "web",
@@ -70,6 +77,7 @@ const services = [
     ],
     benefits: "99.9% uptime across all client sites",
     color: "from-green-500 to-emerald-500",
+    image: "/services/service_web_dev_1769254617586.png",
   },
   {
     id: "3d-ads",
@@ -86,6 +94,7 @@ const services = [
     ],
     benefits: "250% higher engagement vs traditional ads",
     color: "from-red-500 to-rose-500",
+    image: "/services/service_3d_ads_1769254643486.png",
   },
   {
     id: "3d-real-estate",
@@ -102,6 +111,7 @@ const services = [
     ],
     benefits: "Reduce time-to-sale by 40%",
     color: "from-indigo-500 to-purple-500",
+    image: "/services/service_3d_real_estate_1769254659892.png",
   },
   {
     id: "3d-mockups",
@@ -118,6 +128,7 @@ const services = [
     ],
     benefits: "75% faster product approval process",
     color: "from-teal-500 to-cyan-500",
+    image: "/services/service_3d_mockups_1769254678174.png",
   },
   {
     id: "3d-configurator",
@@ -134,34 +145,22 @@ const services = [
     ],
     benefits: "Increase conversion rates by 65%",
     color: "from-pink-500 to-rose-500",
+    image: "/services/service_3d_configurator_1769254692497.png",
   },
 ]
 
 export function ServicesPage() {
+  const containerRef = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLDivElement>(null)
-  const cardsRef = useRef<(HTMLDivElement | null)[]>([])
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Header animation
+      // Header animation only (Cards handled by CSS sticky)
       gsap.from(headerRef.current, {
         y: 50,
         opacity: 0,
         duration: 0.8,
         ease: "power3.out",
-      })
-
-      // Stagger cards animation
-      gsap.from(cardsRef.current, {
-        y: 100,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.15,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: cardsRef.current[0],
-          start: "top 80%",
-        },
       })
     })
 
@@ -169,83 +168,122 @@ export function ServicesPage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-black">
+    <div ref={containerRef} className="min-h-screen bg-gray-50 dark:bg-black">
       <Navbar />
       
-      {/* Header */}
-      <div ref={headerRef} className="pt-32 pb-16 px-4 sm:px-6 lg:px-8">
+      {/* Hero Header */}
+      <div className="pt-32 pb-12 px-4 sm:px-6 lg:px-8 bg-white dark:bg-black/50 border-b border-gray-100 dark:border-white/5">
         <div className="max-w-7xl mx-auto text-center">
-          <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold mb-6">
-            <span className="bg-gradient-to-r from-[#8B1538] to-[#A91D47] bg-clip-text text-transparent">
-              Our Services
-            </span>
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold mb-6 tracking-tight">
+            Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#8B1538] to-[#A91D47]">Services</span>
           </h1>
-          <p className="text-xl sm:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Comprehensive digital solutions tailored to transform your business
+          <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto font-light">
+            Crafting digital excellence with precision and creativity.
           </p>
         </div>
       </div>
 
-      {/* Services Grid */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
-        <div className="space-y-20">
+      {/* Services Container */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
+        {/* Services Stack */}
+        <div className="relative space-y-20 lg:space-y-0">
           {services.map((service, index) => {
-            const Icon = service.icon
             const isEven = index % 2 === 0
 
             return (
               <div
-                key={service.id}
-                id={service.id}
-                ref={(el) => {cardsRef.current[index] = el}}
-                className={`glass-strong rounded-3xl p-8 sm:p-12 border border-white/20 hover:shadow-2xl transition-smooth ${
-                  isEven ? "lg:mr-12" : "lg:ml-12"
-                }`}
+                key={service.id} 
+                className="lg:sticky lg:top-32 lg:h-[calc(100vh-8rem)] lg:flex lg:items-center lg:justify-center"
+                style={{ zIndex: index }}
               >
-                <div className={`grid lg:grid-cols-2 gap-8 items-center ${!isEven && "lg:grid-flow-dense"}`}>
-                  {/* Content */}
-                  <div className={!isEven ? "lg:col-start-2" : ""}>
-                    <div className={`inline-flex p-4 rounded-2xl bg-gradient-to-br ${service.color} mb-6`}>
-                      <Icon className="w-10 h-10 text-white" />
+                {/* Mobile View - Minimalist Card */}
+                <div className="lg:hidden bg-white dark:bg-gray-900 rounded-3xl overflow-hidden shadow-lg border border-gray-100 dark:border-gray-800">
+                  <div className="relative h-48 sm:h-64 w-full bg-gray-100 dark:bg-gray-800">
+                    <Image
+                      src={service.image}
+                      alt={service.title}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{service.title}</h2>
+                      <service.icon className="w-6 h-6 text-[#8B1538]" />
                     </div>
-                    
-                    <h2 className="text-3xl sm:text-4xl font-bold mb-3 text-gray-900 dark:text-white">
-                      {service.title}
-                    </h2>
-                    
-                    <p className="text-xl text-[#8B1538] dark:text-[#A91D47] font-semibold mb-4">
-                      {service.tagline}
-                    </p>
-                    
-                    <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
+                    <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 leading-relaxed">
                       {service.description}
                     </p>
-
-                    <div className="space-y-3 mb-6">
-                      {service.features.map((feature) => (
-                        <div key={feature} className="flex items-start gap-3">
-                          <Check className="w-5 h-5 text-[#8B1538] dark:text-[#A91D47] flex-shrink-0 mt-0.5" />
-                          <span className="text-gray-700 dark:text-gray-300">{feature}</span>
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="bg-gradient-to-r from-[#8B1538]/10 to-[#A91D47]/10 rounded-xl p-4 mb-6">
-                      <p className="text-sm font-semibold text-[#8B1538] dark:text-[#A91D47]">
+                    <div className="flex flex-wrap items-center gap-2 mb-4">
+                      <div className="text-xs font-medium text-[#8B1538] dark:text-[#A91D47] bg-[#8B1538]/5 dark:bg-[#A91D47]/10 p-2 rounded-lg">
                         ⚡ {service.benefits}
-                      </p>
+                      </div>
                     </div>
 
-                    <button className="group px-6 py-3 bg-gradient-to-r from-[#8B1538] to-[#A91D47] text-white rounded-lg font-semibold transition-smooth hover:shadow-xl hover:shadow-[#8B1538]/50 hover:scale-105 inline-flex items-center gap-2">
-                      Get Started
-                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                    </button>
+                    <div className="flex gap-2">
+                      <a href="/contact" className="flex-1 py-3 text-center bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg font-semibold text-sm">
+                        Get Started
+                      </a>
+                      <a href={`/pricing#${service.id}`} className="flex-1 py-3 text-center border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-lg font-semibold text-sm">
+                        Pricing
+                      </a>
+                    </div>
                   </div>
+                </div>
 
-                  {/* Visual Placeholder */}
-                  <div className={!isEven ? "lg:col-start-1 lg:row-start-1" : ""}>
-                    <div className={`aspect-square rounded-2xl bg-gradient-to-br ${service.color} flex items-center justify-center`}>
-                      <Icon className="w-32 h-32 text-white opacity-30" />
+                {/* Desktop View - Sticky Stack Card */}
+                <div className="hidden lg:flex w-full max-w-6xl mx-auto bg-white dark:bg-[#0A0A0A] rounded-[2.5rem] overflow-hidden shadow-2xl border border-gray-100 dark:border-white/5 relative">
+                  {/* Background Gradient */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${service.color} opacity-5 mix-blend-overlay pointer-events-none`} />
+
+                  <div className="flex w-full h-full min-h-[600px]">
+                    {/* Content Side */}
+                    <div className="flex-1 p-16 flex flex-col justify-center">
+                      <div className={`inline-flex self-start p-4 rounded-2xl bg-gradient-to-br ${service.color} mb-8 shadow-lg`}>
+                        <service.icon className="w-8 h-8 text-white" />
+                      </div>
+
+                      <h2 className="text-5xl font-bold mb-4 text-gray-900 dark:text-white leading-tight">
+                        {service.title}
+                      </h2>
+
+                      <p className="text-xl text-[#8B1538] dark:text-[#A91D47] font-medium mb-6">
+                        {service.tagline}
+                      </p>
+
+                      <p className="text-lg text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
+                        {service.description}
+                      </p>
+
+                      <ul className="grid grid-cols-2 gap-4 mb-10">
+                        {service.features.map((feature) => (
+                          <li key={feature} className="flex items-center gap-3 text-gray-700 dark:text-gray-300 text-sm">
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#8B1538]" />
+                            {feature}
+                          </li>
+                        ))}
+                      </ul>
+
+                      <div className="flex items-center gap-4">
+                        <a href="/contact" className="px-8 py-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-full font-bold hover:bg-[#8B1538] dark:hover:bg-[#A91D47] dark:hover:text-white transition-all transform hover:-translate-y-1">
+                          Get Started
+                        </a>
+                        <a href={`/pricing#${service.id}`} className="px-8 py-4 border-2 border-gray-200 dark:border-gray-800 text-gray-900 dark:text-white rounded-full font-bold hover:border-[#8B1538] hover:text-[#8B1538] transition-all">
+                          Check Pricing
+                        </a>
+                      </div>
+                    </div>
+
+                    {/* Image Side */}
+                    <div className="flex-1 relative bg-gray-50 dark:bg-[#111] overflow-hidden">
+                      <Image
+                        src={service.image}
+                        alt={service.title}
+                        fill
+                        className="object-cover transition-transform duration-1000 hover:scale-105"
+                      />
+                      {/* Overlay Gradient */}
+                      <div className={`absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none`} />
                     </div>
                   </div>
                 </div>
@@ -254,20 +292,11 @@ export function ServicesPage() {
           })}
         </div>
 
-        {/* CTA Section */}
-        <div className="mt-20 text-center glass-strong rounded-3xl p-12 border border-white/20">
-          <h3 className="text-3xl font-bold mb-4 text-gray-900 dark:text-white">
-            Ready to Get Started?
-          </h3>
-          <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
-            Let's discuss how we can help transform your business
-          </p>
-          <a
-            href="/contact"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-[#8B1538] to-[#A91D47] text-white rounded-full font-semibold text-lg transition-smooth hover:shadow-2xl hover:shadow-[#8B1538]/50 hover:scale-105"
-          >
-            Contact Us
-            <ArrowRight className="w-5 h-5" />
+        {/* Bottom CTA */}
+        <div className="mt-32 text-center">
+          <h3 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">Ready to transform your vision?</h3>
+          <a href="/contact" className="inline-block px-10 py-5 bg-gradient-to-r from-[#8B1538] to-[#A91D47] text-white rounded-full font-bold text-lg shadow-xl hover:shadow-2xl hover:scale-105 transition-all">
+            Start Your Project
           </a>
         </div>
       </div>
@@ -276,3 +305,4 @@ export function ServicesPage() {
     </div>
   )
 }
+

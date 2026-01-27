@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Navbar } from "./Navbar"
 import { Footer } from "./Footer"
 import { Check, IndianRupee } from "lucide-react"
@@ -12,42 +12,38 @@ const pricingData = [
     packages: [
       {
         name: "Starter",
-        price: 80000,
+        price: 15000,
         duration: "per campaign",
         features: [
-          "5-10 micro-influencers",
-          "Campaign strategy",
-          "Basic analytics",
-          "1 month support",
-          "Social media management",
+          "5 micro-influencers",
+          "Basic strategy",
+          "Performance tracking",
+          "Email support",
         ],
       },
       {
         name: "Professional",
-        price: 200000,
+        price: 45000,
         duration: "per campaign",
         features: [
-          "10-25 influencers (micro + macro)",
-          "Advanced campaign strategy",
-          "Detailed analytics & reporting",
-          "3 months support",
-          "Content rights management",
-          "Multi-platform campaigns",
+          "15 influencers (micro + macro)",
+          "Advanced strategy",
+          "Detailed analytics",
+          "Content rights",
+          "Priority support",
         ],
         popular: true,
       },
       {
         name: "Enterprise",
-        price: 500000,
+        price: 120000,
         duration: "per campaign",
         features: [
-          "25+ influencers (all tiers)",
-          "Full campaign management",
-          "Real-time analytics dashboard",
-          "6 months support",
-          "Dedicated account manager",
-          "Celebrity collaborations",
-          "International reach",
+          "30+ influencers",
+          "Full management",
+          "Real-time dashboard",
+          "Dedicated manager",
+          "Celebrity access",
         ],
       },
     ],
@@ -58,42 +54,38 @@ const pricingData = [
     packages: [
       {
         name: "Basic",
-        price: 15000,
+        price: 3000,
         duration: "per video",
         features: [
-          "Up to 3 minutes",
-          "Color grading",
-          "Basic transitions",
-          "2 revisions",
-          "HD export (1080p)",
+          "Up to 1 min",
+          "Basic cuts & trims",
+          "Simple transitions",
+          "1 revision",
         ],
       },
       {
         name: "Professional",
-        price: 40000,
+        price: 8000,
         duration: "per video",
         features: [
-          "Up to 10 minutes",
-          "Advanced color grading",
-          "Motion graphics",
+          "Up to 5 mins",
+          "Color correction",
           "Sound design",
-          "5 revisions",
-          "4K export",
+          "Motion graphics",
+          "3 revisions",
         ],
         popular: true,
       },
       {
         name: "Premium",
-        price: 100000,
+        price: 20000,
         duration: "per video",
         features: [
           "Unlimited length",
-          "Cinema-grade color grading",
           "Advanced VFX",
-          "Professional sound design",
+          "Cinema-grade grading",
           "Unlimited revisions",
-          "8K export",
-          "Dedicated editor",
+          "Source files",
         ],
       },
     ],
@@ -104,42 +96,38 @@ const pricingData = [
     packages: [
       {
         name: "Starter",
-        price: 120000,
+        price: 25000,
         duration: "one-time",
         features: [
-          "Single workflow automation",
-          "Basic AI integration",
-          "Documentation",
-          "1 month support",
-          "Email support",
+          "Single workflow",
+          "Basic integration",
+          "Setup guide",
+          "1 week support",
         ],
       },
       {
         name: "Business",
-        price: 300000,
+        price: 60000,
         duration: "one-time",
         features: [
-          "Multiple workflow automation",
-          "Advanced AI integration",
-          "Custom training",
-          "3 months support",
-          "Priority support",
-          "Performance optimization",
+          "3 workflows",
+          "Custom AI logic",
+          "API integration",
+          "1 month support",
+          "Training session",
         ],
         popular: true,
       },
       {
         name: "Enterprise",
-        price: 800000,
+        price: 150000,
         duration: "one-time",
         features: [
-          "Complete business automation",
-          "Custom AI models",
-          "On-premise deployment",
-          "12 months support",
-          "24/7 dedicated support",
-          "Scalability planning",
-          "Integration with existing systems",
+          "Full system automation",
+          "Custom model training",
+          "On-premise option",
+          "3 months support",
+          "Dedicated engineer",
         ],
       },
     ],
@@ -150,42 +138,38 @@ const pricingData = [
     packages: [
       {
         name: "Basic",
-        price: 50000,
+        price: 15000,
         duration: "one-time",
         features: [
-          "5-page website",
-          "Responsive design",
-          "Basic SEO",
+          "3-page site",
+          "Mobile responsive",
           "Contact form",
-          "1 month support",
+          "Basic SEO",
         ],
       },
       {
         name: "Business",
-        price: 150000,
+        price: 35000,
         duration: "one-time",
         features: [
-          "10-page website",
-          "Custom design",
-          "Advanced SEO",
+          "10-page site",
           "CMS integration",
-          "E-commerce ready",
-          "3 months support",
+          "Blog setup",
+          "Social integration",
+          "Speed optimization",
         ],
         popular: true,
       },
       {
-        name: "Enterprise",
-        price: 400000,
+        name: "E-Commerce",
+        price: 80000,
         duration: "one-time",
         features: [
-          "Unlimited pages",
-          "Custom functionality",
-          "Advanced integrations",
-          "Performance optimization",
-          "Security hardening",
-          "12 months support",
-          "Dedicated developer",
+          "Online store",
+          "Payment gateway",
+          "Inventory management",
+          "Advanced security",
+          "1 year support",
         ],
       },
     ],
@@ -197,42 +181,38 @@ const pricingData = [
     packages: [
       {
         name: "Basic",
-        price: 60000,
-        duration: "per project",
+        price: 10000,
+        duration: "per asset",
         features: [
-          "Simple 3D model",
-          "Basic rendering",
-          "2 revisions",
-          "Standard quality",
-          "1 week delivery",
+          "Simple model",
+          "Standard texture",
+          "HD render",
+          "1 revision",
         ],
       },
       {
         name: "Professional",
-        price: 180000,
+        price: 30000,
         duration: "per project",
         features: [
-          "Complex 3D models",
-          "Photorealistic rendering",
-          "5 revisions",
-          "High quality",
-          "Interactive elements",
-          "2 week delivery",
+          "complex modeling",
+          "Photorealistic textures",
+          "4K render",
+          "Lighting setup",
+          "3 revisions",
         ],
         popular: true,
       },
       {
         name: "Premium",
-        price: 500000,
+        price: 80000,
         duration: "per project",
         features: [
-          "Ultra-detailed models",
-          "Cinema-grade rendering",
-          "Unlimited revisions",
-          "Ultra-high quality",
-          "Full interactivity",
-          "VR/AR ready",
-          "Priority delivery",
+          "High-end scene",
+          "Animation ready",
+          "Physics simulation",
+          "Commercial rights",
+          "Source files",
         ],
       },
     ],
@@ -241,6 +221,18 @@ const pricingData = [
 
 export function PricingPage() {
   const [selectedService, setSelectedService] = useState(pricingData[0])
+
+  useEffect(() => {
+    // Check URL hash to auto-select service
+    const hash = window.location.hash.replace('#', '')
+    if (hash) {
+      const service = pricingData.find(s => s.id === hash)
+      if (service) {
+        setSelectedService(service)
+      }
+    }
+  }, [])
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-black">

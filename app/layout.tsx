@@ -20,15 +20,19 @@ export const metadata: Metadata = {
   description: "Influencer marketing management platform",
 };
 
-import { CommandMenu } from "@/components/command-menu"
+import { GlobalCommandMenu } from "@/components/ui/GlobalCommandMenu"
 import { AnnouncementBanner } from "@/components/layout/AnnouncementBanner"
 import { SchemaScript, generateOrganizationSchema } from "@/lib/schema"
+import { CMSProvider } from "@/components/cms/CMSProvider"
+import { getCMSConfig } from "@/lib/cms"
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cmsConfig = await getCMSConfig()
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -37,21 +41,23 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <SessionProvider>
-            <div className="flex flex-col min-h-screen">
-              <AnnouncementBanner />
-              {children}
-            </div>
-            <CommandMenu />
-            <Toaster position="top-right" />
-          </SessionProvider>
-        </ThemeProvider>
+        <CMSProvider config={cmsConfig}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <SessionProvider refetchOnWindowFocus={false}>
+              <div className="flex flex-col min-h-screen">
+                <AnnouncementBanner />
+                {children}
+              </div>
+              <GlobalCommandMenu />
+              <Toaster position="top-right" />
+            </SessionProvider>
+          </ThemeProvider>
+        </CMSProvider>
       </body>
     </html>
   );

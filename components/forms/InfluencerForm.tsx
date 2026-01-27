@@ -26,12 +26,14 @@ import {
 } from "@/components/ui/alert-dialog"
 import { toast } from "sonner"
 import { Trash2 } from "lucide-react"
+import { useAutoSave } from "@/hooks/useAutoSave"
 
 interface Influencer {
     id: string
     name: string
     instagramId: string
     profileLink: string | null
+    serviceType: string // Added
     category: string
     city: string | null
     country: string | null
@@ -54,10 +56,11 @@ export function InfluencerForm({ influencer, mode }: InfluencerFormProps) {
     const [isLoading, setIsLoading] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
 
-    const [formData, setFormData] = useState({
+    const { data: formData, setData: setFormData, clearDraft } = useAutoSave(`influencer-form-${mode}`, {
         name: influencer?.name || "",
         instagramId: influencer?.instagramId || "",
         profileLink: influencer?.profileLink || "",
+        serviceType: influencer?.serviceType || "Influencer Marketing", // Added
         category: influencer?.category || "",
         city: influencer?.city || "",
         country: influencer?.country || "",
@@ -97,6 +100,7 @@ export function InfluencerForm({ influencer, mode }: InfluencerFormProps) {
             })
 
             if (response.ok) {
+                clearDraft() // Clear auto-save
                 toast.success(mode === "edit" ? "Influencer updated successfully!" : "Influencer added successfully!")
                 router.push("/influencers")
                 router.refresh()
@@ -163,6 +167,30 @@ export function InfluencerForm({ influencer, mode }: InfluencerFormProps) {
                             />
                         </div>
                     </div>
+
+                    {/* New Service Type Dropdown */}
+                    <div>
+                        <Label htmlFor="serviceType">Service Type</Label>
+                        <Select
+                            value={formData.serviceType}
+                            onValueChange={(value) => setFormData(prev => ({ ...prev, serviceType: value }))}
+                        >
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select Service" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="Influencer Marketing">Influencer Marketing</SelectItem>
+                                <SelectItem value="Video Production">Video Production</SelectItem>
+                                <SelectItem value="Web Development">Web Development</SelectItem>
+                                <SelectItem value="AI Automation">AI Automation</SelectItem>
+                                <SelectItem value="3D Ads">3D Ads</SelectItem>
+                                <SelectItem value="Real Estate 3D">Real Estate 3D</SelectItem>
+                                <SelectItem value="3D Mockups">3D Mockups</SelectItem>
+                                <SelectItem value="3D Configurator">3D Configurator</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+
                     <div>
                         <Label htmlFor="profileLink">Profile Link</Label>
                         <Input

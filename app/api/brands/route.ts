@@ -35,6 +35,7 @@ export async function POST(request: Request) {
                 name: body.name,
                 type: body.type,
                 industry: body.industry,
+                serviceType: body.serviceType || "General", // Added
                 city: body.city,
                 country: body.country,
                 contactPerson: body.contactPerson,

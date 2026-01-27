@@ -35,6 +35,7 @@ model Influencer {
   name           String
   instagramId    String    @unique
   profileLink    String?
+  serviceType    String    @default("Influencer Marketing") // Added Service Type
   category       String
   city           String?
   country        String?
@@ -63,6 +64,7 @@ model Brand {
   name          String
   type          String?
   industry      String?
+  serviceType   String    @default("General") // Added Service Type
   city          String?
   country       String?
   contactPerson String?
