@@ -22,6 +22,8 @@ export async function POST(request: Request) {
                 balance: body.balance || 0,
                 status: body.status,
                 dueDate: new Date(body.dueDate),
+                method: body.method,
+                transactionId: body.transactionId,
                 notes: body.notes,
             },
         })
@@ -50,6 +52,8 @@ export async function PUT(request: Request) {
                 balance: data.balance,
                 status: data.status,
                 dueDate: data.dueDate ? new Date(data.dueDate) : undefined,
+                method: data.method,
+                transactionId: data.transactionId,
                 notes: data.notes,
             },
         })

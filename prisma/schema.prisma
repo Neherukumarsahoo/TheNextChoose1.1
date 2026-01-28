@@ -147,6 +147,8 @@ model Payment {
   status      String        @default("PENDING") // Was PaymentStatus
   dueDate     DateTime
   paidDate    DateTime?
+  method      String?       // Bank Transfer, UPI, etc.
+  transactionId String?
   notes       String?
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt

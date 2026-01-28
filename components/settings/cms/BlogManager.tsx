@@ -3,6 +3,8 @@
 import { useState } from "react"
 import { Plus, Search, Edit2, Trash2, Settings, Image as ImageIcon, Sparkles, X, Eye } from "lucide-react"
 import { RichTextEditor } from "@/components/cms/RichTextEditor"
+import { MediaManager } from "@/components/cms/MediaManager"
+import { SEOPreview } from "@/components/cms/SEOPreview"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -247,30 +249,15 @@ export function BlogManager({ posts = [], onChange }: BlogManagerProps) {
                                             onChange={(e) => setCurrentPost(prev => prev ? ({...prev, coverImage: e.target.value}) : null)} 
                                             placeholder="https://... or upload" 
                                         />
-                                        <Input
-                                            type="file"
-                                            className="hidden"
-                                            id="cover-upload"
-                                            accept="image/*"
-                                            onChange={(e) => {
-                                                const file = e.target.files?.[0]
-                                                if (file) {
-                                                    const reader = new FileReader()
-                                                    reader.onloadend = () => {
-                                                        setCurrentPost(prev => prev ? ({...prev, coverImage: reader.result as string}) : null)
-                                                    }
-                                                    reader.readAsDataURL(file)
-                                                }
-                                            }}
+                                        <MediaManager
+                                            onSelect={(url) => setCurrentPost(prev => prev ? ({ ...prev, coverImage: url }) : null)}
+                                            trigger={
+                                                <Button variant="outline" className="whitespace-nowrap">
+                                                    <ImageIcon className="h-4 w-4 mr-2" />
+                                                    Library
+                                                </Button>
+                                            }
                                         />
-                                        <Button 
-                                            variant="outline" 
-                                            onClick={() => document.getElementById('cover-upload')?.click()}
-                                            className="whitespace-nowrap"
-                                        >
-                                            <ImageIcon className="h-4 w-4 mr-2" />
-                                            Upload
-                                        </Button>
                                     </div>
                                 </div>
 
@@ -288,20 +275,30 @@ export function BlogManager({ posts = [], onChange }: BlogManagerProps) {
                                     <h4 className="font-medium flex items-center gap-2">
                                         <Sparkles className="h-4 w-4 text-purple-600" /> SEO Settings
                                     </h4>
-                                    <div className="space-y-2">
-                                        <Label>Meta Title</Label>
-                                        <Input 
-                                            value={currentPost?.seo.title} 
-                                            onChange={(e) => setCurrentPost(prev => prev ? ({...prev, seo: {...prev.seo, title: e.target.value}}) : null)} 
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label>Meta Description</Label>
-                                        <Textarea 
-                                            value={currentPost?.seo.description} 
-                                            onChange={(e) => setCurrentPost(prev => prev ? ({...prev, seo: {...prev.seo, description: e.target.value}}) : null)} 
-                                            rows={2}
-                                        />
+                                    <div className="space-y-4">
+                                        <div className="space-y-2">
+                                            <Label>Meta Title</Label>
+                                            <Input
+                                                value={currentPost?.seo.title}
+                                                onChange={(e) => setCurrentPost(prev => prev ? ({ ...prev, seo: { ...prev.seo, title: e.target.value } }) : null)}
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label>Meta Description</Label>
+                                            <Textarea
+                                                value={currentPost?.seo.description}
+                                                onChange={(e) => setCurrentPost(prev => prev ? ({ ...prev, seo: { ...prev.seo, description: e.target.value } }) : null)}
+                                                rows={2}
+                                            />
+                                        </div>
+                                        <div className="pt-2">
+                                            <Label className="text-xs text-muted-foreground mb-2 block">Search Result Preview</Label>
+                                            <SEOPreview
+                                                title={currentPost?.seo.title || currentPost?.title || ""}
+                                                description={currentPost?.seo.description || currentPost?.excerpt || ""}
+                                                slug={currentPost?.slug || ""}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </div>

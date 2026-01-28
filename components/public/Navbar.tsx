@@ -5,7 +5,7 @@ import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
-import { Menu, X } from "lucide-react"
+import { Menu, X, Home, Briefcase, CreditCard, Mail } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useCMS } from "@/components/cms/CMSProvider"
 import { gsap } from "gsap"
@@ -40,106 +40,129 @@ export function Navbar() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // 1. Initial Load Animation (Expand from Pill)
-      const tl = gsap.timeline({
-        onComplete: () => { isCompactRef.current = false }
-      })
+      const mm = gsap.matchMedia();
 
-      // Set initial state
-      gsap.set(navRef.current, { width: 50, borderRadius: 9999 })
-      gsap.set(linksRef.current, { opacity: 0, scale: 0.9, display: "none" })
-      gsap.set(logoTextRef.current, { opacity: 0, width: 0, overflow: 'hidden' })
-
-      // Expansion Sequence
-      tl.to(navRef.current, {
-        width: "auto",
-        minWidth: 50,
-        duration: 1.2,
-        ease: "expo.out",
-        delay: 0.2
-      })
-        .to(linksRef.current, {
-          display: "flex",
-          opacity: 1,
-          scale: 1,
-          duration: 0.8,
-          ease: "power2.out"
-        }, "-=0.8")
-        .to(logoTextRef.current, {
-          width: "auto",
-          opacity: 1,
-          duration: 0.8,
-          ease: "power2.out"
-        }, "-=0.8")
-
-
-      // 2. Scroll Triggers for Shape Shifting
-      ScrollTrigger.create({
-        start: 0,
-        end: "max",
-        onUpdate: (self) => {
-          const isScrollDown = self.direction === 1
-          const isScrollUp = self.direction === -1
-          // const isScrolledPast = self.scroll() > 50
-
-          if (isScrollDown && !isCompactRef.current) {
-            toCompact()
-          } else if (isScrollUp && isCompactRef.current) {
-            toExpanded()
-          }
-        }
-      })
-
-      function toCompact() {
-        if (isMenuOpenRef.current) return // Don't shrink if menu open
-
-        gsap.to(navRef.current, {
-          width: 50,
-          paddingLeft: 5,
-          paddingRight: 5,
-          duration: 0.8,
-          ease: "expo.inOut"
+      // Desktop Only Animation
+      mm.add("(min-width: 768px)", () => {
+        // 1. Initial Load Animation (Expand from Pill)
+        const tl = gsap.timeline({
+          onComplete: () => { isCompactRef.current = false }
         })
-        gsap.to(linksRef.current, {
-          opacity: 0,
-          scale: 0.8,
-          duration: 0.4,
-          overwrite: true,
-          onComplete: () => {
-            if (navRef.current && gsap.getProperty(navRef.current, "width") <= 60) {
-              gsap.set(linksRef.current, { display: "none" })
+
+        // Set initial state
+        gsap.set(navRef.current, { width: 50, borderRadius: 9999 })
+        gsap.set(linksRef.current, { opacity: 0, scale: 0.9, display: "none" })
+        gsap.set(logoTextRef.current, { opacity: 0, width: 0, overflow: 'hidden' })
+
+        // Expansion Sequence
+        tl.to(navRef.current, {
+          width: "auto",
+          minWidth: 50,
+          duration: 1.2,
+          ease: "expo.out",
+          delay: 0.2
+        })
+          .to(linksRef.current, {
+            display: "flex",
+            opacity: 1,
+            scale: 1,
+            duration: 0.8,
+            ease: "power2.out"
+          }, "-=0.8")
+          .to(logoTextRef.current, {
+            width: "auto",
+            opacity: 1,
+            duration: 0.8,
+            ease: "power2.out"
+          }, "-=0.8")
+
+
+        // 2. Scroll Triggers for Shape Shifting
+        ScrollTrigger.create({
+          start: 0,
+          end: "max",
+          onUpdate: (self) => {
+            const isScrollDown = self.direction === 1
+            const isScrollUp = self.direction === -1
+        // const isScrolledPast = self.scroll() > 50
+
+            if (isScrollDown && !isCompactRef.current) {
+              toCompact()
+            } else if (isScrollUp && isCompactRef.current) {
+              toExpanded()
             }
           }
         })
-        gsap.to(logoTextRef.current, {
-          width: 0,
+      });
+
+      function toCompact() {
+        if (isMenuOpenRef.current) return
+
+        // 1. Shrink container to "Pill" shape (Make it bigger/wider as requested)
+        gsap.to(navRef.current, {
+          width: "auto",
+          paddingLeft: 40, // More padding for bigger look
+          paddingRight: 40,
+          duration: 1, // Slower, smoother
+          ease: "power4.inOut" // Smooth, premium feel
+        })
+
+        // 2. Hide links smoothly
+        gsap.to(linksRef.current, {
           opacity: 0,
-          duration: 0.4
+          scale: 0.9,
+          duration: 0.5,
+          overwrite: true,
+          onComplete: () => {
+            gsap.set(linksRef.current, { display: "none" })
+          }
+        })
+
+        // 3. Show centered text sequence
+        gsap.to(logoTextRef.current, {
+          width: "auto",
+          opacity: 1,
+          duration: 0.8,
+          ease: "power2.out",
+          delay: 0.2 // Wait for container to start shrinking
         })
         isCompactRef.current = true
       }
 
       function toExpanded() {
-        gsap.set(linksRef.current, { display: "flex" })
+        // 1. Prepare elements
+        gsap.set(linksRef.current, { display: "flex", opacity: 0, scale: 0.95 })
 
+        // 2. Expand container Width FIRST (Smoothest expansion)
         gsap.to(navRef.current, {
-          width: "auto",
-          minWidth: 50,
+          width: "100%", // Go back to full width first
           paddingLeft: 24,
           paddingRight: 24,
-          duration: 0.8,
-          ease: "expo.out"
+          duration: 1.2, // Luxurious slow expansion
+          ease: "power4.inOut",
+          force3D: true,
+          overwrite: "auto"
         })
+
+        // 3. Reveal Links naturally as it expands
         gsap.to(linksRef.current, {
           opacity: 1,
           scale: 1,
-          duration: 0.6,
-          delay: 0.1
+          duration: 0.8,
+          delay: 0.4, // Wait for width to open up a bit
+          ease: "power2.out",
+          force3D: true
         })
+
+        // 4. Reset Logo Text (back to left)
         gsap.to(logoTextRef.current, {
-          width: "auto",
+          width: "auto", // Keep it visible or hide? User said "move to left side". 
+          // Actually, in expanded mode, usually logo is icon only or icon+text?
+          // Looking at previous state, it seems we want to keep it visible but maybe adjust positional context?
+          // Existing code had width: "auto" opacity 1. Let's keep that but ensure it doesn't jump.
           opacity: 1,
-          duration: 0.6
+          duration: 0.8,
+          ease: "power2.out"
         })
         isCompactRef.current = false
       }
@@ -150,34 +173,33 @@ export function Navbar() {
   }, [])
 
   return (
+    <>
+      {/* Main Top Navbar (Logo + Desktop Links) */}
     <nav
-      ref={navRef}
-      className="fixed top-6 left-1/2 -translate-x-1/2 z-50 glass-strong border border-white/20 shadow-2xl flex items-center justify-between overflow-hidden h-16 box-content"
-      style={{ borderRadius: 9999, minWidth: 50 }}
+        className="fixed top-6 left-1/2 -translate-x-1/2 z-50 glass-strong border border-white/20 shadow-2xl flex items-center justify-between overflow-hidden h-16 box-content will-change-[width,padding] 
+                 w-[95vw] md:w-auto px-4 md:px-0 rounded-2xl md:rounded-[9999px]"
+        style={{ minWidth: 50 }}
     >
       {/* Logo Container */}
-      <div className="flex items-center gap-2 pl-1 pr-1 flex-shrink-0">
-        <Link href="/" className="flex items-center gap-2 transition-transform hover:scale-105">
-          <div className="relative w-10 h-10 flex items-center justify-center">
-            {config?.logoUrl ? (
-              <img
-                src={config.logoUrl}
-                alt={config.brandName || "Brand"}
-                className="object-contain w-8 h-8"
-              />
-            ) : (
-              <Image
-                src="/logo/thenextchooselogo.png"
-                alt="TheNextChoose"
-                  width={32}
-                  height={32}
-                  className="object-contain"
-                />
-            )}
-          </div>
-          <span ref={logoTextRef} className="text-lg font-bold bg-gradient-to-r from-[var(--brand-primary)] to-[var(--brand-secondary)] bg-clip-text text-transparent whitespace-nowrap" style={{ fontFamily: config?.headingFont }}>
-            {config?.brandName || "TheNextChoose"}
-          </span>
+        <div className="flex items-center gap-2 flex-shrink-0 mx-auto md:mx-0">
+          <Link href="/" className="flex items-center gap-2">
+            <div className={cn("relative flex items-center justify-center", config?.logoType === 'image_only' ? "w-8 h-8" : "w-10 h-10")}>
+              {config?.logoUrl ? (
+                <img src={config.logoUrl} alt={config.brandName || "Brand"} className="object-contain w-full h-full" />
+              ) : (
+                <Image src="/logo/thenextchooselogo.png" alt="TheNextChoose" width={32} height={32} className="object-contain" />
+              )}
+            </div>
+            <span
+              ref={logoTextRef}
+              className={cn(
+                "text-lg font-bold whitespace-nowrap",
+                !config?.brandColor && "bg-gradient-to-r from-[var(--brand-primary)] to-[var(--brand-secondary)] bg-clip-text text-transparent"
+              )}
+              style={{ fontFamily: config?.headingFont, color: config?.brandColor }}
+            >
+              {config?.brandName || "TheNextChoose"}
+            </span>
         </Link>
       </div>
 
@@ -198,32 +220,37 @@ export function Navbar() {
               </Link>
             ))}
       </div>
+      </nav>
 
-      {/* Mobile Menu Toggle (Always visible in expanded, compact hides text) */}
-      <div className="md:hidden pr-2">
-        <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-        >
-          {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-        </button>
-      </div>
-
-      {/* Mobile Menu Overlay */}
-      {mobileMenuOpen && (
-        <div className="absolute top-20 left-0 right-0 bg-white dark:bg-[#111] rounded-3xl p-4 shadow-xl border border-gray-100 dark:border-white/10 flex flex-col gap-2 min-w-[300px] animate-in fade-in slide-in-from-top-4">
-          {navItems.map((link: any) => (
-            <Link
-              key={link.id || link.href}
+      {/* Mobile Bottom Navigation Bar */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.12)] rounded-2xl p-2 flex justify-around items-center gap-1 px-2">
+        {[
+          { href: "/", label: "Home", icon: Home },
+          { href: "/services", label: "Services", icon: Briefcase },
+          { href: "/pricing", label: "Pricing", icon: CreditCard },
+          { href: "/contact", label: "Contact", icon: Mail }
+        ].map((link) => {
+          const Icon = link.icon
+          const isActive = pathname === link.href
+          return (
+            <Link 
+              key={link.label}
               href={link.href}
-              onClick={() => setMobileMenuOpen(false)}
-              className="p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 text-gray-800 dark:text-gray-200 font-medium"
+              className={cn(
+                "flex flex-col items-center justify-center py-1 px-2 rounded-xl transition-all duration-300 w-16",
+                isActive ? "bg-black/5 text-[#8B1538]" : "text-gray-400 hover:text-gray-600"
+              )}
             >
-              {link.label}
+              <Icon strokeWidth={isActive ? 2.5 : 2} className={cn("w-5 h-5 mb-0.5 transition-transform", isActive && "scale-110")} />
+              <span className={cn("text-[8px] font-bold uppercase tracking-wide", isActive ? "opacity-100" : "opacity-0 scale-0 h-0 w-0 overflow-hidden")}>
+                {isActive ? link.label : ""}
+              </span>
+              {/* Alternative: If user wants text always visible but small */}
+              {/* <span className={cn("text-[9px] font-medium leading-none", isActive ? "font-bold" : "")}>{link.label}</span> */}
             </Link>
-          ))}
-        </div>
-      )}
-    </nav>
+          )
+        })}
+      </div>
+    </>
   )
 }

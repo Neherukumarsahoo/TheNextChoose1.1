@@ -7,6 +7,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { ArrowRight, Sparkles, TrendingUp } from "lucide-react"
 
+
 gsap.registerPlugin(ScrollTrigger)
 
 // --- Lightweight 3D Assets ---
@@ -55,6 +56,7 @@ const LiveStatCard = () => (
 )
 
 import { useCMS } from "@/components/cms/CMSProvider"
+
 
 export function HeroSection() {
   const config = useCMS()
@@ -108,13 +110,14 @@ export function HeroSection() {
   }, [])
 
   return (
-    <div ref={containerRef} className="relative min-h-[120vh] flex flex-col justify-start pt-32 lg:pt-48 overflow-hidden bg-gray-50 dark:bg-[#050505]">
+    <div ref={containerRef} className="hidden md:flex relative min-h-[120vh] flex-col justify-start pt-32 lg:pt-48 overflow-hidden bg-gray-50 dark:bg-[#050505]">
 
       {/* Liquid Background Layer */}
+      {/* Liquid Background Layer - Optimized */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="liquid-blob absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-[#8B1538]/20 mix-blend-multiply filter blur-[80px] rounded-full animate-blob" />
-        <div className="liquid-blob absolute top-[20%] right-[-10%] w-[40vw] h-[40vw] bg-[#A91D47]/20 mix-blend-multiply filter blur-[80px] rounded-full animate-blob animation-delay-2000" />
-        <div className="liquid-blob absolute bottom-[-10%] left-[20%] w-[60vw] h-[60vw] bg-purple-500/10 mix-blend-multiply filter blur-[80px] rounded-full animate-blob animation-delay-4000" />
+        <div className="liquid-blob absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-[#8B1538]/20 mix-blend-multiply filter blur-[60px] rounded-full animate-blob will-change-transform" />
+        <div className="liquid-blob absolute top-[20%] right-[-10%] w-[40vw] h-[40vw] bg-[#A91D47]/20 mix-blend-multiply filter blur-[60px] rounded-full animate-blob animation-delay-2000 will-change-transform" />
+        <div className="liquid-blob absolute bottom-[-10%] left-[20%] w-[60vw] h-[60vw] bg-purple-500/10 mix-blend-multiply filter blur-[60px] rounded-full animate-blob animation-delay-4000 will-change-transform" />
       </div>
 
       {/* Floating Scroll Objects (Parallax) */}
@@ -152,12 +155,12 @@ export function HeroSection() {
         </h1>
 
         {/* Subtitle */}
-        <p className="text-xl sm:text-2xl text-gray-600 dark:text-gray-400 mb-12 max-w-2xl mx-auto leading-relaxed">
+        <p className="text-xl sm:text-2xl text-gray-600 dark:text-gray-400 mb-12 max-w-2xl mx-auto leading-relaxed pl-40">
           {config.heroSubtitle}
         </p>
 
         {/* CTAs */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+        <div className="flex flex-col sm:flex-row mt-10 gap-4 justify-center items-center">
           <Link
             href="/services"
             className="group relative px-10 py-5 bg-[#0F0F0F] dark:bg-white text-white dark:text-black rounded-full font-bold text-lg overflow-hidden transition-all hover:scale-105"
@@ -170,26 +173,14 @@ export function HeroSection() {
 
           <Link
             href={config.heroCtaLink}
-            className="px-10 py-5 glass border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-full font-bold text-lg hover:bg-gray-100 dark:hover:bg-white/10 transition-all"
+            className="px-10 py-5 glass border border-gray-200 dark:border-white/10 text-gray-900 hover:text-amber-50 dark:text-white rounded-full font-bold text-lg hover:bg-gray-950 dark:hover:bg-white/10 transition-all"
           >
             {config.heroCtaText}
           </Link>
         </div>
 
-        {/* Social Proof Text (Replaces the big widget) */}
-        <div className="mt-16 pt-8 border-t border-gray-200/50 dark:border-white/10 w-full max-w-sm mx-auto">
-          <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
-            Trusted by 500+ fast-growing brands
-          </p>
-          <div className="flex -space-x-3 justify-center mt-4">
-            {[1, 2, 3, 4].map(i => (
-              <div key={i} className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-800 border-2 border-white dark:border-black" />
-            ))}
-            <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-900 border-2 border-white dark:border-black flex items-center justify-center text-xs font-bold text-gray-600 dark:text-gray-400">
-              +500
-            </div>
-          </div>
-        </div>
+
+
       </div>
     </div>
   )

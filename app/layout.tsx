@@ -25,6 +25,7 @@ import { AnnouncementBanner } from "@/components/layout/AnnouncementBanner"
 import { SchemaScript, generateOrganizationSchema } from "@/lib/schema"
 import { CMSProvider } from "@/components/cms/CMSProvider"
 import { getCMSConfig } from "@/lib/cms"
+import { Preloader } from "@/components/ui/Preloader"
 
 export default async function RootLayout({
   children,
@@ -42,6 +43,7 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <CMSProvider config={cmsConfig}>
+          <Preloader />
           <ThemeProvider
             attribute="class"
             defaultTheme="system"

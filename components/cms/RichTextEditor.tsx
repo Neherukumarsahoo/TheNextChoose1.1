@@ -9,7 +9,8 @@ import {
     Bold, Italic, List, ListOrdered, Quote, Undo, Redo, Link as LinkIcon, Image as ImageIcon, Heading1, Heading2, Code, Upload
 } from 'lucide-react'
 import { Toggle } from "@/components/ui/toggle"
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
+import { MediaManager } from "@/components/cms/MediaManager"
 
 interface RichTextEditorProps {
     content: string
@@ -19,6 +20,7 @@ interface RichTextEditorProps {
 
 export function RichTextEditor({ content, onChange, editable = true }: RichTextEditorProps) {
     const fileInputRef = useRef<HTMLInputElement>(null)
+    const [mediaOpen, setMediaOpen] = useState(false)
     
     const editor = useEditor({
         immediatelyRender: false,
@@ -57,28 +59,9 @@ export function RichTextEditor({ content, onChange, editable = true }: RichTextE
         editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run()
     }
 
-    const addImage = () => {
-        const url = window.prompt('Image URL')
+    const addImage = (url: string) => {
         if (url) {
             editor.chain().focus().setImage({ src: url }).run()
-        }
-    }
-
-    const triggerFileUpload = () => {
-        fileInputRef.current?.click()
-    }
-
-    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0]
-        if (file) {
-            const reader = new FileReader()
-            reader.onload = (e) => {
-                const result = e.target?.result as string
-                if (result) {
-                    editor.chain().focus().setImage({ src: result }).run()
-                }
-            }
-            reader.readAsDataURL(file)
         }
     }
 
@@ -158,19 +141,16 @@ export function RichTextEditor({ content, onChange, editable = true }: RichTextE
                     <LinkIcon className="h-4 w-4" />
                 </Button>
                 
-                <Button variant="ghost" size="sm" onClick={triggerFileUpload} className="text-gray-700 hover:bg-gray-100" title="Upload Image">
-                    <Upload className="h-4 w-4" />
-                </Button>
-                <input 
-                    type="file" 
-                    ref={fileInputRef} 
-                    className="hidden" 
-                    accept="image/*"
-                    onChange={handleFileUpload}
+                <MediaManager
+                    open={mediaOpen}
+                    onOpenChange={setMediaOpen}
+                    onSelect={addImage}
+                    trigger={
+                        <Button variant="ghost" size="sm" className="text-gray-700 hover:bg-gray-100" title="Add Image">
+                            <ImageIcon className="h-4 w-4" />
+                        </Button>
+                    }
                 />
-                <Button variant="ghost" size="sm" onClick={addImage} className="text-gray-700 hover:bg-gray-100" title="Add Image URL">
-                    <ImageIcon className="h-4 w-4" />
-                </Button>
 
                 <div className="flex-1" />
 

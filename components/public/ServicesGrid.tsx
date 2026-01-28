@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { Video, Zap, Globe, Users, Box, Building, Package, ShoppingCart, ArrowRight } from "lucide-react"
@@ -14,56 +14,64 @@ const services = [
     title: "Influencer Marketing",
     description: "Connect with top creators and amplify your brand reach. We manage end-to-end campaigns with data-driven ROI.",
     color: "#7e22ce", // Darker Purple
-    type: "network"
+    type: "network",
+    price: "₹25,000"
   },
   {
     icon: Video,
     title: "Video Editing",
     description: "Professional post-production for stunning visual content. From social clips to cinematic production.",
     color: "#2563eb", // Darker Blue
-    type: "timeline"
+    type: "timeline",
+    price: "₹5,000"
   },
   {
     icon: Zap,
     title: "AI Automation",
     description: "Streamline workflows with intelligent automation. Custom bots, CRM integration, and efficiency scaling.",
     color: "#ca8a04", // Darker Yellow
-    type: "neural"
+    type: "neural",
+    price: "₹30,000"
   },
   {
     icon: Globe,
     title: "Website Building",
     description: "Custom web solutions that convert visitors to customers. High-performance Next.js sites with premium design.",
     color: "#059669", // Darker Green
-    type: "wireframe"
+    type: "wireframe",
+    price: "₹15,000"
   },
   {
     icon: Box,
     title: "3D Ads Generation",
     description: "Immersive advertising experiences that captivate. Stop the scroll with impossible 3D visuals.",
     color: "#dc2626", // Darker Red
-    type: "ads"
+    type: "ads",
+    price: "₹20,000"
   },
   {
     icon: Building,
     title: "3D Real Estate",
     description: "Virtual property tours bringing spaces to life. Interactive walk-throughs for developers and agents.",
     color: "#4f46e5", // Darker Indigo
-    type: "real_estate"
+    type: "real_estate",
+    price: "₹45,000"
   },
   {
     icon: Package,
     title: "3D Mockups",
     description: "Photorealistic product visualization and prototyping. See your product before it exists.",
     color: "#0d9488", // Darker Teal
-    type: "mockup"
+    type: "mockup",
+    price: "₹10,000"
   },
   {
     icon: ShoppingCart,
     title: "3D Configurator",
     description: "Interactive Shopify integration for dynamic products. Let customers build their perfect version.",
     color: "#db2777", // Darker Pink
-    type: "configurator"
+    type: "configurator",
+    price: "₹55,000"
   },
 ]
 
@@ -181,31 +189,40 @@ export function ServicesGrid() {
   const bgRef = useRef<HTMLDivElement>(null)
   const cardsRef = useRef<(HTMLDivElement | null)[]>([])
 
-  useEffect(() => {
-    // ... GSAP Logic remains same ...
-    const ctx = gsap.context(() => {
-      // --- Desktop Animation (Horizontal Scroll) ---
-      if (window.innerWidth > 1024) {
-        const track = trackRef.current
-        // Calculate scroll distance to show all cards
-        const scrollLength = track!.scrollWidth - window.innerWidth + 200;
+  // useLayoutEffect is preferred for GSAP to avoid layout shifts
+  const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? React.useLayoutEffect : React.useEffect;
+
+  useIsomorphicLayoutEffect(() => {
+    const mm = gsap.matchMedia();
+
+  // --- Desktop Animation (Horizontal Scroll) ---
+    mm.add("(min-width: 1024px)", () => {
+      const track = trackRef.current;
+      const container = containerRef.current;
+
+      if (track && container) {
+        // Recalculate width to be safe
+        const scrollLength = track.scrollWidth - window.innerWidth + 200;
 
         gsap.to(track, {
           x: -scrollLength,
           ease: "none",
           scrollTrigger: {
-            trigger: containerRef.current,
+            trigger: container,
             pin: true,
             scrub: 1,
             start: "top top",
-            end: `+=${scrollLength + 500}`,
+            end: () => `+=${scrollLength + 500}`, // Functional end value for responsiveness
+            invalidateOnRefresh: true, // Recalculate on resize
             anticipatePin: 1
           }
-        })
+        });
       }
+    });
 
-      // --- Mobile Animation (Vertical Grid Stagger) ---
-      else {
+    // --- Mobile Animation (Vertical Grid Stagger) ---
+    mm.add("(max-width: 1023px)", () => {
+      if (cardsRef.current.length > 0) {
         gsap.from(cardsRef.current, {
           y: 50,
           opacity: 0,
@@ -215,22 +232,23 @@ export function ServicesGrid() {
             trigger: containerRef.current,
             start: "top 70%",
           }
-        })
+        });
       }
+    });
 
-      // --- Background Transition (Common) ---
+    // --- Common Animations ---
+    if (bgRef.current && containerRef.current) {
       ScrollTrigger.create({
         trigger: containerRef.current,
         start: "top bottom",
         end: "top 20%",
         scrub: 1,
         animation: gsap.to(bgRef.current, { opacity: 1, ease: "none" })
-      })
+      });
+    }
 
-    }, containerRef)
-
-    return () => ctx.revert()
-  }, [])
+    return () => mm.revert();
+  }, []);
 
   return (
     <div ref={containerRef} className="relative min-h-screen py-24 flex flex-col justify-center overflow-hidden">
@@ -249,7 +267,7 @@ export function ServicesGrid() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 w-full z-10">
         <div className="max-w-xl">
-          <h2 className="text-4xl md:text-6xl font-bold text-gray-900 mb-2 tracking-tight">
+          <h2 className="text-4xl md:text-6xl font-bold text-[#8B1538] mb-2 tracking-tight">
             {config.servicesSectionTitle}
           </h2>
           <p className="text-lg text-gray-500">
@@ -294,11 +312,11 @@ export function ServicesGrid() {
 
                   {config.servicesShowPrices && (
                     <div className="mb-2 text-sm font-semibold text-[color:var(--brand-color)] opacity-80">
-                      Starting at $500
+                      Starting at {service.price}
                     </div>
                   )}
 
-                  <p className="text-base text-gray-500 leading-relaxed mb-auto line-clamp-4">
+                  <p className="text-base text-gray-500 leading-relaxed mb-auto line-clamp-none">
                     {service.description}
                   </p>
 

@@ -5,6 +5,7 @@ import { Plus, Edit2, Trash2, HelpCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { RichTextEditor } from "@/components/cms/RichTextEditor"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
     Dialog,
@@ -110,7 +111,7 @@ export function FAQManager({ items = [], onChange }: FAQManagerProps) {
                                 </div>
                             </div>
                             <div className="text-sm text-muted-foreground pb-4 pl-8 border-t pt-2 mt-0">
-                                {item.answer}
+                                <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: item.answer }} />
                             </div>
                         </AccordionItem>
                     ))}
@@ -133,11 +134,9 @@ export function FAQManager({ items = [], onChange }: FAQManagerProps) {
                         </div>
                         <div className="space-y-2">
                             <Label>Answer</Label>
-                            <Textarea 
-                                value={currentItem?.answer} 
-                                onChange={(e) => setCurrentItem(prev => prev ? ({...prev, answer: e.target.value}) : null)} 
-                                placeholder="Enter the answer here..." 
-                                rows={4}
+                            <RichTextEditor
+                                content={currentItem?.answer || ""}
+                                onChange={(content) => setCurrentItem(prev => prev ? ({ ...prev, answer: content }) : null)}
                             />
                         </div>
                     </div>

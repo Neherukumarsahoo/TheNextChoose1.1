@@ -1,8 +1,10 @@
 import { useState } from "react"
-import { Plus, Edit2, Trash2, Link as LinkIcon, Menu, GripVertical, Check, X, Image as ImageIcon } from "lucide-react"
+import { Plus, Edit2, Trash2, Link as LinkIcon, Menu, GripVertical, Check, X, Image as ImageIcon, LayoutTemplate } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
+import { ColorPicker } from "@/components/ui/ColorPicker"
+import { MediaManager } from "@/components/cms/MediaManager"
 import {
     Dialog,
     DialogContent,
@@ -131,45 +133,51 @@ export function NavigationManager({ items = [], config, onItemsChange, onConfigC
                     </div>
 
                     <div className="space-y-2">
-                         <Label>Logo</Label>
+                        <Label>Logo</Label>
                          <div className="flex gap-2">
                             <Input value={config.logoUrl || ""} onChange={(e) => onConfigChange('logoUrl', e.target.value)} placeholder="/logo.png" />
-                            <Input
-                                type="file"
-                                className="hidden"
-                                id="logo-upload"
-                                accept="image/*"
-                                onChange={(e) => {
-                                    const file = e.target.files?.[0]
-                                    if (file) {
-                                        const reader = new FileReader()
-                                        reader.onloadend = () => {
-                                            onConfigChange('logoUrl', reader.result)
-                                        }
-                                        reader.readAsDataURL(file)
-                                    }
-                                }}
+                            <MediaManager
+                                onSelect={(url) => onConfigChange('logoUrl', url)}
+                                trigger={
+                                    <Button variant="outline" className="whitespace-nowrap">
+                                        <ImageIcon className="h-4 w-4 mr-2" />
+                                        Library
+                                    </Button>
+                                }
                             />
-                            <Button 
-                                variant="outline" 
-                                onClick={() => document.getElementById('logo-upload')?.click()}
-                                className="whitespace-nowrap"
-                            >
-                                <ImageIcon className="h-4 w-4 mr-2" />
-                                Upload
-                            </Button>
-                         </div>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label>Logo Layout</Label>
+                            <Select value={config.logoType || "icon_text"} onValueChange={(v) => onConfigChange('logoType', v)}>
+                                <SelectTrigger>
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="icon_text">Icon + Text</SelectItem>
+                                    <SelectItem value="image_only">Image Only</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <ColorPicker
+                            label="Brand Color"
+                            value={config.brandColor || "#000000"}
+                            onChange={(v) => onConfigChange('brandColor', v)}
+                        />
                     </div>
                 </div>
 
                 <div className="flex flex-col justify-center items-center border p-6 rounded-lg bg-white dark:bg-black relative overflow-hidden">
                     <p className="text-xs text-muted-foreground absolute top-2 left-2">Preview</p>
                     <nav className="flex items-center gap-6 w-full max-w-sm border-b pb-4">
-                        <div className="font-bold text-xl" style={{ fontFamily: config.headingFont || 'Inter' }}>
-                            {config.logoUrl ? (
-                                <img src={config.logoUrl} alt="Logo" className="h-8 object-contain" />
-                            ) : (
-                                config.brandName || "Brand"
+                        <div className="font-bold text-xl flex items-center gap-2" style={{ fontFamily: config.headingFont || 'Inter', color: config.brandColor }}>
+                            {config.logoUrl && (
+                                <img src={config.logoUrl} alt="Logo" className={config.logoType === 'image_only' ? "h-10 object-contain" : "h-8 object-contain"} />
+                            )}
+                            {config.logoType !== 'image_only' && (
+                                <span>{config.brandName || "Brand"}</span>
                             )}
                         </div>
                         <div className="flex-1" />

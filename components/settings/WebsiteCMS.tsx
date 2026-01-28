@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Switch } from "@/components/ui/switch"
 import { toast } from "sonner"
-import { Palette, Type, Layout, Phone, Zap, BookOpen, HelpCircle, MessageSquareQuote, Map, Search, Image as ImageIcon, PanelRightClose, PanelRightOpen, List } from "lucide-react"
+import { Palette, Type, Layout, Phone, Zap, BookOpen, HelpCircle, MessageSquareQuote, Map, Search, Image as ImageIcon, PanelRightClose, PanelRightOpen, List, CreditCard } from "lucide-react"
 
 import { BlogManager, BlogPost } from "./cms/BlogManager"
 import { MediaLibrary, MediaAsset } from "./cms/MediaLibrary"
@@ -16,8 +16,10 @@ import { FAQManager, FAQItem } from "./cms/FAQManager"
 import { TestimonialManager, Testimonial } from "./cms/TestimonialManager"
 import { NavigationManager, NavItem } from "./cms/NavigationManager"
 import { SEOManager, SEOConfig } from "./cms/SEOManager"
+import { PricingManager, PricingService } from "./cms/PricingManager"
 
 import { LayoutItem } from "./cms/LayoutManager"
+
 
 const DEFAULT_CONFIG = {
     // Theme
@@ -103,6 +105,82 @@ const DEFAULT_CONFIG = {
         { id: 'faq', label: 'FAQ', visible: true },
         { id: 'contact', label: 'Contact', visible: true },
     ] as LayoutItem[],
+
+    // Pricing
+    pricingData: [
+        {
+            id: "influencer",
+            title: "Influencer Marketing",
+            packages: [
+                { name: "Starter", price: 25000, originalPrice: 35000, duration: "per campaign", features: ["5 Micro-Influencers", "Basic Content Strategy", "Performance Tracking", "Email Support"], popular: false },
+                { name: "Growth", price: 60000, originalPrice: 85000, duration: "per campaign", features: ["15 Influencers Mix", "Advanced Strategy", "Content Rights", "Dedicated Manager"], popular: true },
+                { name: "Enterprise", price: 150000, originalPrice: 200000, duration: "per campaign", features: ["30+ Influencers", "Celebrity Options", "Full Production", "24/7 Priority Support"], popular: false },
+            ]
+        },
+        {
+            id: "video",
+            title: "Video Editing",
+            packages: [
+                { name: "Essential", price: 5000, originalPrice: 8000, duration: "per video", features: ["Up to 1 Minute", "Basic Cuts & Transitions", "Color Correction", "2 Revisions"], popular: false },
+                { name: "Professional", price: 15000, originalPrice: 22000, duration: "per video", features: ["Up to 5 Minutes", "Advanced VFX & Motion", "Sound Design", "Unlimited Revisions"], popular: true },
+                { name: "Series", price: 30000, originalPrice: 45000, duration: "per series (4 vids)", features: ["4 Videos Package", "Thumbnail Design", "SEO Optimization", "Source Files Included"], popular: false },
+            ]
+        },
+        {
+            id: "ai",
+            title: "AI Automation",
+            packages: [
+                { name: "Pilot", price: 30000, originalPrice: 50000, duration: "project", features: ["Needs Assessment", "Basic Chatbot", "Email Automation", "1 Week Support"], popular: false },
+                { name: "Business", price: 85000, originalPrice: 120000, duration: "project", features: ["Custom AI Workflows", "CRM Integration", "Data Analysis Bot", "1 Month Support"], popular: true },
+                { name: "Scale", price: 200000, originalPrice: 300000, duration: "project", features: ["Full Operations Audit", "Multiple AI Agents", "Custom LLM Training", "3 Months Support"], popular: false },
+            ]
+        },
+        {
+            id: "web",
+            title: "Website Building",
+            packages: [
+                { name: "Launch", price: 15000, originalPrice: 25000, duration: "project", features: ["5 Page Website", "Mobile Responsive", "Contact Form", "Basic SEO"], popular: false },
+                { name: "Growth", price: 40000, originalPrice: 60000, duration: "project", features: ["10-15 Pages", "CMS Integration", "Blog Setup", "Speed Optimization"], popular: true },
+                { name: "E-Commerce", price: 100000, originalPrice: 150000, duration: "project", features: ["Full Online Store", "Payment Gateway", "Inventory System", "User Accounts"], popular: false },
+            ]
+        },
+        {
+            id: "3d-ads",
+            title: "3D Ads Generation",
+            packages: [
+                { name: "Single", price: 20000, originalPrice: 30000, duration: "per ad", features: ["15s Animation", "Product Focus", "Social Media Size", "1 Revision"], popular: false },
+                { name: "Campaign", price: 50000, originalPrice: 75000, duration: "per campaign", features: ["3 Ad Variations", "Storyboarding", "High-End Rendering", "3 Revisions"], popular: true },
+                { name: "Broadcast", price: 120000, originalPrice: 180000, duration: "per project", features: ["TV Quality Render", "Full Environment", "Character Animation", "Source Files"], popular: false },
+            ]
+        },
+        {
+            id: "3d-real-estate",
+            title: "3D Real Estate",
+            packages: [
+                { name: "Exterior", price: 45000, originalPrice: 60000, duration: "per view", features: ["Photorealistic Exterior", "Day/Night Lighting", "Landscaping", "4K Output"], popular: false },
+                { name: "Interior Walkthrough", price: 80000, originalPrice: 110000, duration: "per floor", features: ["Full Floor Tour", "Furniture Staging", "Interactive Points", "VR Ready"], popular: true },
+                { name: "Development", price: 150000, originalPrice: 250000, duration: "project", features: ["Complete Complex", "Aerial Views", "Sales Video", "Brochure Images"], popular: false },
+            ]
+        },
+        {
+            id: "3d-mockups",
+            title: "3D Mockups",
+            packages: [
+                { name: "Basic", price: 10000, originalPrice: 15000, duration: "per item", features: ["White Background", "High Res Render", "2 Views", "Standard Materials"], popular: false },
+                { name: "Scene", price: 25000, originalPrice: 35000, duration: "per item", features: ["Lifestyle Setting", "Custom Materials", "5 Views", "Lighting Setup"], popular: true },
+                { name: "Collection", price: 50000, originalPrice: 80000, duration: "per collection", features: ["10 Product Set", "Consistent Style", "Marketing Assets", "360 Spin"], popular: false },
+            ]
+        },
+        {
+            id: "3d-configurator",
+            title: "3D Configurator",
+            packages: [
+                { name: "Simple", price: 55000, originalPrice: 80000, duration: "project", features: ["Color Changes", "Spin Viewer", "Web Integration", "Analytics"], popular: false },
+                { name: "Advanced", price: 120000, originalPrice: 180000, duration: "project", features: ["Part Swapping", "Texture Changes", "Price Calculation", "AR View"], popular: true },
+                { name: "Enterprise", price: 250000, originalPrice: 400000, duration: "project", features: ["Complex Logic", "ERP Integration", "Custom UI/UX", "Multi-Platform"], popular: false },
+            ]
+        }
+    ] as any[],
 }
 
 export function WebsiteCMS() {
@@ -166,6 +244,7 @@ export function WebsiteCMS() {
 
                         <TabsTrigger value="hero">Hero Section</TabsTrigger>
                         <TabsTrigger value="services">Services</TabsTrigger>
+                        <TabsTrigger value="pricing">Pricing</TabsTrigger>
                         <TabsTrigger value="contact">Contact & Footer</TabsTrigger>
                         <TabsTrigger value="banner">Announcement Bar</TabsTrigger>
                         <TabsTrigger value="blog">Blog</TabsTrigger>
@@ -285,6 +364,24 @@ export function WebsiteCMS() {
                                 </div>
                             </CardContent>
                         </Card>
+                    </TabsContent>
+
+                    <TabsContent value="pricing" className="space-y-4 mt-4">
+                        <Card className="mb-4">
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <CreditCard className="w-5 h-5 text-green-600" /> Pricing Plans
+                                </CardTitle>
+                                <CardDescription>
+                                    Manage your service packages, prices, and discounts.
+                                </CardDescription>
+                            </CardHeader>
+                        </Card>
+
+                        <PricingManager
+                            data={config.pricingData || []}
+                            onChange={(data) => handleChange('pricingData', data)}
+                        />
                     </TabsContent>
 
                     <TabsContent value="contact" className="space-y-4 mt-4">

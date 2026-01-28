@@ -25,6 +25,12 @@ interface Payment {
     balance: string
     status: "PENDING" | "PAID" | "HOLD"
     dueDate: string
+    dueDate: string
+    method?: string
+    transactionId?: string
+    dueDate: string
+    method?: string
+    transactionId?: string
     notes: string
 }
 
@@ -46,6 +52,11 @@ export function PaymentForm({ payment, mode, campaigns = [] }: PaymentFormProps)
         balance: payment?.balance?.toString() || "0",
         status: payment?.status || "PENDING",
         dueDate: payment?.dueDate || new Date().toISOString().split('T')[0],
+        method: payment?.method || "",
+        transactionId: payment?.transactionId || "",
+        dueDate: payment?.dueDate || new Date().toISOString().split('T')[0],
+        method: payment?.method || "",
+        transactionId: payment?.transactionId || "",
         notes: payment?.notes || "",
     })
 

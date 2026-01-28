@@ -14,6 +14,7 @@ import { LogOut, User } from "lucide-react"
 import { NotificationCenter } from "@/components/notifications/NotificationCenter"
 import { ThemeToggle } from "@/components/theme/ThemeToggle"
 import { MobileSidebar } from "@/components/layout/MobileSidebar"
+import { SessionTimer } from "@/components/auth/SessionTimer"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 import {
@@ -65,6 +66,7 @@ export function Header() {
             </div>
 
             <div className="flex items-center gap-2">
+                <SessionTimer />
                 <ThemeToggle />
                 <NotificationCenter />
 
@@ -90,7 +92,7 @@ export function Header() {
                             </div>
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/auth/login" })} className="text-red-600 focus:text-red-600">
+                        <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/auth/login", redirect: true })} className="text-red-600 focus:text-red-600">
                             <LogOut className="mr-2 h-4 w-4" />
                             Sign Out
                         </DropdownMenuItem>
