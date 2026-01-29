@@ -72,10 +72,10 @@ export function BlogPage() {
   const config = useCMS()
   const [selectedCategory, setSelectedCategory] = useState("All")
   const headerRef = useRef<HTMLDivElement>(null)
-  const cardsRef = useRef<(HTMLDivElement | null)[]>([])
+  const cardsRef = useRef<(HTMLElement | null)[]>([])
 
   // Get Published Posts from CMS
-  const blogPosts = (config?.blogPosts || []).filter((p: any) => p.status === 'published').map((p: any) => ({
+  const posts = (config?.blogPosts || []).filter((p: any) => p.status === 'published').map((p: any) => ({
     id: p.id,
     slug: p.slug,
     title: p.title,
@@ -88,11 +88,11 @@ export function BlogPage() {
   }))
 
   // Dynamic Categories based on posts
-  const uniqueCategories = ["All", ...Array.from(new Set(blogPosts.map((p: any) => p.category)))] as string[]
+  const uniqueCategories = ["All", ...Array.from(new Set(posts.map((p: any) => p.category)))] as string[]
 
   const filteredPosts = selectedCategory === "All"
-    ? blogPosts
-    : blogPosts.filter((post: any) => post.category === selectedCategory)
+    ? posts
+    : posts.filter((post: any) => post.category === selectedCategory)
 
   useEffect(() => {
     const ctx = gsap.context(() => {

@@ -12,13 +12,7 @@ export function SystemHealth() {
     const [apiLatency, setApiLatency] = useState(0)
     const [lastBackup, setLastBackup] = useState("2 hours ago")
 
-    useEffect(() => {
-        // Simulate real-time monitoring
-        const interval = setInterval(() => {
-            setApiLatency(Math.floor(Math.random() * 50) + 10)
-        }, 2000)
-        return () => clearInterval(interval)
-    }, [])
+
 
     const triggerBackup = () => {
         toast.info("Starting database backup...")

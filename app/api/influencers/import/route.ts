@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
         let count = 0
         const errors = []
 
-        for (const record of records) {
+        for (const record of records as any[]) {
             try {
                 // Validation - Ensure required fields exist
                 if (!record.instagramId || !record.name || !record.followers) {
@@ -52,10 +52,6 @@ export async function POST(request: NextRequest) {
                         storyPrice: storyPrice,
                         postPrice: postPrice,
                         city: record.city,
-                        country: record.country,
-                        email: record.email, // Assuming model has email? Actually schema didn't show email for Influencer, wait.
-                        // Schema check: Influencer doesn't have email in the schema I viewed earlier. It has name, instagramId, category, etc.
-                        // Let's stick to known fields.
                     },
                     create: {
                         name: record.name,

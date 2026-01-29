@@ -20,8 +20,6 @@ export function AdminPulse() {
         }
         
         fetchPulse()
-        const interval = setInterval(fetchPulse, 5000) // Poll every 5s for "real-time" feel
-        return () => clearInterval(interval)
     }, [])
 
     if (loading) return <div>Initializing pulse...</div>

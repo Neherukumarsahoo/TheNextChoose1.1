@@ -23,32 +23,42 @@ export async function GET(request: Request) {
             totalBrands,
             totalCampaigns,
             activeCampaigns,
-            brandPayments,
-            influencerPayouts
+            revenueAgg,
+            payoutsAgg,
+            investmentAgg
         ] = await Promise.all([
             prisma.influencer.count(),
             prisma.influencer.count({ where: { active: true } }),
             prisma.brand.count(),
             prisma.campaign.count(),
             prisma.campaign.count({ where: { status: "ACTIVE" } }),
-            prisma.payment.findMany({ where: { type: "BRAND_PAYMENT" } }),
-            prisma.payment.findMany({ where: { type: "INFLUENCER_PAYOUT" } })
+            prisma.payment.aggregate({
+                where: { type: "BRAND_PAYMENT" },
+                _sum: { amount: true }
+            }),
+            prisma.payment.aggregate({
+                where: { type: "INFLUENCER_PAYOUT" },
+                _sum: { amount: true }
+            }),
+            prisma.investment.aggregate({
+                _sum: { amount: true }
+            })
         ])
 
-        const totalRevenue = brandPayments.reduce((sum, p) => sum + p.amount, 0)
-        const totalPayouts = influencerPayouts.reduce((sum, p) => sum + p.amount, 0)
-        const profit = totalRevenue - totalPayouts
+        const totalRevenue = revenueAgg._sum.amount || 0
+        const totalPayouts = payoutsAgg._sum.amount || 0
+        const totalInvestment = investmentAgg._sum.amount || 0
+        const profit = totalRevenue - totalPayouts - totalInvestment
 
         // Fetch trend data
         const monthsToShow = period === "1year" ? 12 : 6
-        const trendData = []
-
-        for (let i = monthsToShow - 1; i >= 0; i--) {
+        const trendPromises = Array.from({ length: monthsToShow }).map(async (_, index) => {
+            const i = monthsToShow - 1 - index
             const date = subMonths(new Date(), i)
             const start = startOfMonth(date)
             const end = endOfMonth(date)
 
-            const [monthRevenue, monthPayouts] = await Promise.all([
+            const [monthRevenue, monthPayouts, monthInvestment] = await Promise.all([
                 prisma.payment.aggregate({
                     where: {
                         type: "BRAND_PAYMENT",
@@ -62,16 +72,25 @@ export async function GET(request: Request) {
                         createdAt: { gte: start, lte: end }
                     },
                     _sum: { amount: true }
+                }),
+                prisma.investment.aggregate({
+                    where: {
+                        date: { gte: start, lte: end }
+                    },
+                    _sum: { amount: true }
                 })
             ])
 
-            trendData.push({
+            return {
                 month: format(date, "MMM yyyy"),
                 revenue: monthRevenue._sum.amount || 0,
                 payouts: monthPayouts._sum.amount || 0,
-                profit: (monthRevenue._sum.amount || 0) - (monthPayouts._sum.amount || 0)
-            })
-        }
+                investment: monthInvestment._sum.amount || 0,
+                profit: (monthRevenue._sum.amount || 0) - (monthPayouts._sum.amount || 0) - (monthInvestment._sum.amount || 0)
+            }
+        })
+
+        const trendData = await Promise.all(trendPromises)
 
         return NextResponse.json({
             stats: {
@@ -82,6 +101,7 @@ export async function GET(request: Request) {
                 activeCampaigns,
                 totalRevenue,
                 totalPayouts,
+                totalInvestment,
                 profit
             },
             trendData

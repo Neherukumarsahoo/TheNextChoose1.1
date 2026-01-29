@@ -17,6 +17,7 @@ import {
     ChevronLeft,
     ChevronRight,
     Zap,
+    PieChart,
 } from "lucide-react"
 import { canManageAdmins, canEditSettings } from "@/lib/permissions"
 import { Button } from "@/components/ui/button"
@@ -34,8 +35,8 @@ const menuItems = [
     { href: "/campaigns", icon: Megaphone, label: "Campaigns" },
     { href: "/content-review", icon: FileText, label: "Content Review" },
     { href: "/payments", icon: DollarSign, label: "Payments" },
+    { href: "/cost", icon: PieChart, label: "Cost" },
     { href: "/contact-submissions", icon: FileText, label: "Contact Submissions" },
-    { href: "/public-users", icon: Users, label: "Public Users" },
     { href: "/newsletter-subscribers", icon: FileText, label: "Newsletter" },
 ]
 
@@ -43,9 +44,10 @@ interface SidebarProps {
     className?: string
     isMobile?: boolean
     onNavigate?: () => void
+    onNavStart?: (href: string) => void
 }
 
-export function Sidebar({ className, isMobile = false, onNavigate }: SidebarProps) {
+export function Sidebar({ className, isMobile = false, onNavigate, onNavStart }: SidebarProps) {
     const pathname = usePathname()
     const { data: session } = useSession()
     const userRole = session?.user?.role
@@ -122,7 +124,10 @@ export function Sidebar({ className, isMobile = false, onNavigate }: SidebarProp
                             <Link
                                 key={item.label}
                                 href={item.href}
-                                onClick={onNavigate}
+                                onClick={() => {
+                                    onNavigate?.()
+                                    onNavStart?.(item.href)
+                                }}
                                 className={cn(
                                     "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                                     isActive
@@ -181,7 +186,10 @@ export function Sidebar({ className, isMobile = false, onNavigate }: SidebarProp
                                 <>
                                     <Link
                                             href="/cms"
-                                            onClick={onNavigate}
+                                            onClick={() => {
+                                                onNavigate?.()
+                                                onNavStart?.("/cms")
+                                            }}
                                             className={cn(
                                                 "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors font-bold",
                                                 pathname === "/cms"
@@ -194,7 +202,10 @@ export function Sidebar({ className, isMobile = false, onNavigate }: SidebarProp
                                         </Link>
                                         <Link
                                             href="/settings"
-                                            onClick={onNavigate}
+                                            onClick={() => {
+                                                onNavigate?.()
+                                                onNavStart?.("/settings")
+                                            }}
                                             className={cn(
                                                 "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                                                 pathname === "/settings"
@@ -207,7 +218,10 @@ export function Sidebar({ className, isMobile = false, onNavigate }: SidebarProp
                                         </Link>
                                         <Link
                                             href="/admin-users"
-                                            onClick={onNavigate}
+                                            onClick={() => {
+                                                onNavigate?.()
+                                                onNavStart?.("/admin-users")
+                                            }}
                                             className={cn(
                                                 "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                                                 pathname === "/admin-users"

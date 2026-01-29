@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Users, Briefcase, Megaphone, DollarSign, TrendingUp, Wallet } from "lucide-react"
+import { Users, Briefcase, Megaphone, DollarSign, TrendingUp, Wallet, PieChart } from "lucide-react"
 
 interface AnalyticsData {
     stats: {
@@ -13,12 +13,14 @@ interface AnalyticsData {
         activeCampaigns: number
         totalRevenue: number
         totalPayouts: number
+        totalInvestment: number
         profit: number
     }
     trendData: Array<{
         month: string
         revenue: number
         payouts: number
+        investment: number
         profit: number
     }>
 }
@@ -46,8 +48,8 @@ export function AnalyticsOverview() {
     }, [])
 
     if (isLoading) {
-        return <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {[...Array(6)].map((_, i) => (
+        return <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {[...Array(7)].map((_, i) => ( 
                 <Card key={i} className="animate-pulse">
                     <CardHeader className="h-20 bg-gray-100 dark:bg-gray-800" />
                     <CardContent className="h-16 bg-gray-50 dark:bg-gray-900" />
@@ -82,29 +84,36 @@ export function AnalyticsOverview() {
         },
         {
             title: "Total Revenue",
-            value: `$${data.stats.totalRevenue.toLocaleString()}`,
+            value: `₹${data.stats.totalRevenue.toLocaleString('en-IN')}`,
             sub: "All time brand payments",
             icon: DollarSign,
             color: "text-green-600"
         },
         {
             title: "Influencer Payouts",
-            value: `$${data.stats.totalPayouts.toLocaleString()}`,
+            value: `₹${data.stats.totalPayouts.toLocaleString('en-IN')}`,
             sub: "All time influencer payments",
             icon: Wallet,
             color: "text-red-600"
         },
         {
-            title: "Platform Profit",
-            value: `$${data.stats.profit.toLocaleString()}`,
-            sub: "Total earnings",
+            title: "Total Investment",
+            value: `₹${data.stats.totalInvestment.toLocaleString('en-IN')}`,
+            sub: "Total capital invested",
+            icon: PieChart,
+            color: "text-amber-600"
+        },
+        {
+            title: "Net Profit",
+            value: `₹${data.stats.profit.toLocaleString('en-IN')}`,
+            sub: "Earnings after all costs",
             icon: TrendingUp,
             color: "text-emerald-600"
         }
     ]
 
     return (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {statCards.map((stat, i) => (
                 <Card key={i}>
                     <CardHeader className="flex flex-row items-center justify-between pb-2">

@@ -2,36 +2,9 @@
 
 import { useEffect, useRef, useState } from "react"
 import { gsap } from "gsap"
-import { Mail, Phone, MapPin, Send, MessageSquare, Sparkles } from "lucide-react"
+import { Mail, Phone, MapPin, Send, ArrowRight, Star, Globe } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useContactForm } from "@/hooks/useContactForm"
-
-const contactInfo = [
-  {
-    icon: Mail,
-    title: "Email Us",
-    value: "info@thenextchoose.com",
-    link: "mailto:info@thenextchoose.com",
-    bg: "from-pink-500/20 to-rose-500/20",
-    border: "group-hover:border-pink-500/50"
-  },
-  {
-    icon: Phone,
-    title: "Call Us",
-    value: "+1 (234) 567-890",
-    link: "tel:+1234567890",
-    bg: "from-blue-500/20 to-cyan-500/20",
-    border: "group-hover:border-blue-500/50"
-  },
-  {
-    icon: MapPin,
-    title: "Visit Us",
-    value: "123 Innovation St, Tech City",
-    link: "#",
-    bg: "from-amber-500/20 to-orange-500/20",
-    border: "group-hover:border-amber-500/50"
-  },
-]
 
 export function DesktopContact() {
   const { formData, isSubmitting, handleChange, handleServiceChange, handleBudgetChange, handleSubmit } = useContactForm()
@@ -40,236 +13,205 @@ export function DesktopContact() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Entrance Animations
-      gsap.from(".reveal-text", {
-        y: 50,
-        opacity: 0,
-        duration: 1,
-        stagger: 0.1,
-        ease: "power3.out",
+        // Background Animation
+        gsap.to(".bg-orb", {
+            y: "20%",
+            duration: 8,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+            stagger: 2
       })
-      gsap.from(".reveal-card", {
-        x: -50,
+
+        // Content Entrance
+        gsap.from(".reveal-up", {
+            y: 60,
         opacity: 0,
-        duration: 0.8,
+            duration: 1.2,
         stagger: 0.1,
-        delay: 0.3,
-        ease: "power2.out",
+            ease: "power3.out"
       })
-      gsap.from(".contact-form-container", {
-        x: 50,
+
+        gsap.from(".reveal-scale", {
+            scale: 0.9,
         opacity: 0,
-        duration: 0.8,
-        delay: 0.3,
-        ease: "power2.out",
+            duration: 1,
+            delay: 0.2,
+            ease: "power2.out"
       })
     }, containerRef)
+
     return () => ctx.revert()
   }, [])
 
   return (
-    <div ref={containerRef} className="hidden md:block relative pt-28 pb-20 px-4 sm:px-6 lg:px-8 max-w-[1400px] mx-auto">
-      <div className="grid lg:grid-cols-2 gap-12 lg:gap-24 items-start">
-          
-          {/* Left Column: Visuals & Info */}
-          <div className="flex flex-col gap-12">
-              
-              {/* Header */}
-              <div className="space-y-6">
-                   <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#8B1538]/5 border border-[#8B1538]/10 w-fit reveal-text">
-                      <Sparkles className="w-4 h-4 text-[#8B1538]" />
-                      <span className="text-xs font-bold text-[#8B1538] uppercase tracking-wider">Let's Create Magic</span>
-                  </div>
-                  <h1 className="text-6xl md:text-7xl font-black tracking-tight text-gray-900 dark:text-white leading-[0.9] reveal-text">
-                      Start Your <br/>
-                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#8B1538] to-purple-600">Digital Journey</span>
-                  </h1>
-                  <p className="text-xl text-gray-500 dark:text-gray-400 max-w-lg leading-relaxed reveal-text">
-                      Ready to dominate your industry? We are the growth partners you've been looking for.
-                  </p>
-              </div>
+      <div ref={containerRef} className="hidden md:flex min-h-screen relative items-center justify-center p-8 lg:p-12 overflow-hidden bg-white">
 
-              {/* Interactive 2D Visual (Abstract Network) */}
-                <div className="h-[300px] w-full relative reveal-text flex items-center justify-center">
-                    <div className="relative w-64 h-64">
-                         {/* Central Pulse */}
-                        <div className="absolute inset-0 bg-[#8B1538]/10 rounded-full animate-ping" />
-                        <div className="absolute inset-4 bg-[#8B1538]/5 rounded-full animate-pulse" />
-                        
-                        {/* Core Icon */}
-                         <div className="absolute inset-0 flex items-center justify-center z-10">
-                            <div className="w-24 h-24 bg-gradient-to-br from-[#8B1538] to-[#A91D47] rounded-full shadow-2xl flex items-center justify-center">
-                                <Send className="w-10 h-10 text-white translate-x-1" />
-                            </div>
-                         </div>
-                        
-                         {/* Orbiting Nodes */}
-                        <div className="absolute inset-0 animate-spin-slow">
-                             <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-6 w-12 h-12 bg-white dark:bg-[#1a1a1a] rounded-xl shadow-lg border border-gray-100 dark:border-white/10 flex items-center justify-center">
-                                <Mail className="w-5 h-5 text-blue-500" />
-                            </div>
-                        </div>
+          {/* Premium CSS Background */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              <div className="absolute top-[-20%] right-[-10%] w-[80vw] h-[80vw] bg-purple-200/40 rounded-full blur-[120px] bg-orb" />
+              <div className="absolute bottom-[-20%] left-[-10%] w-[60vw] h-[60vw] bg-[#8B1538]/10 rounded-full blur-[100px] bg-orb" />
+              <div className="absolute top-[40%] left-[20%] w-[40vw] h-[40vw] bg-blue-200/30 rounded-full blur-[80px] bg-orb" />
 
-                         <div className="absolute bottom-4 left-0 right-0 text-center text-xs text-gray-400 uppercase tracking-widest pointer-events-none">
-                            Global Connectivity
-                        </div>
-                    </div>
-                </div>
-
-              {/* Contact Cards */}
-              <div className="grid sm:grid-cols-2 gap-4">
-                  {contactInfo.map((info, i) => {
-                      const Icon = info.icon
-                      return (
-                          <a key={i} href={info.link} className={`reveal-card group relative p-6 rounded-3xl bg-gray-50 dark:bg-white/5 border border-transparent ${info.border} hover:bg-white dark:hover:bg-white/10 transition-all duration-300 hover:shadow-xl`}>
-                              <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${info.bg} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                                  <Icon className="w-6 h-6 text-gray-900 dark:text-white" />
-                              </div>
-                              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">{info.title}</h3>
-                              <p className="text-gray-500 dark:text-gray-400 text-sm">{info.value}</p>
-                          </a>
-                      )
-                  })}
-              </div>
+              {/* Grid Overlay */}
+              <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.02)_1px,transparent_1px)] bg-[size:100px_100px] opacity-20" />
           </div>
 
-          {/* Right Column: Premium Form */}
-          <div className="contact-form-container relative flex flex-col justify-center">
-              <div className="relative bg-white/80 dark:bg-[#111]/80 backdrop-blur-xl border border-gray-200 dark:border-white/10 rounded-[2.5rem] p-8 md:p-12 shadow-2xl overflow-hidden">
-                  {/* Glow Effect */}
-                  <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-[#8B1538]/20 to-transparent blur-[80px]" />
+          <div className="relative z-10 w-full max-w-7xl grid grid-cols-12 gap-12 items-center">
 
-                  <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 relative z-10">
-                      Project Details
-                  </h2>
-
-                  <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
-                      
-                       {/* Name & Email */}
-                      <div className="grid md:grid-cols-2 gap-6">
-                          <div className="group relative">
-                              <label className={cn("absolute left-4 transition-all duration-300 text-gray-400 pointer-events-none", activeField === 'name' || formData.name ? "top-2 text-[10px] font-bold uppercase tracking-wider text-[#8B1538]" : "top-4 text-sm")}>Your Name</label>
-                              <input 
-                                  type="text" 
-                                  name="name"
-                                  value={formData.name}
-                                  onChange={handleChange}
-                                  onFocus={() => setActiveField('name')}
-                                  onBlur={() => setActiveField(null)}
-                                  className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 pt-7 pb-2 outline-none focus:border-[#8B1538] focus:ring-1 focus:ring-[#8B1538] transition-all"
-                              />
-                          </div>
-                          <div className="group relative">
-                              <label className={cn("absolute left-4 transition-all duration-300 text-gray-400 pointer-events-none", activeField === 'email' || formData.email ? "top-2 text-[10px] font-bold uppercase tracking-wider text-[#8B1538]" : "top-4 text-sm")}>Email Address</label>
-                              <input 
-                                  type="email" 
-                                  name="email"
-                                  value={formData.email}
-                                  onChange={handleChange}
-                                  onFocus={() => setActiveField('email')}
-                                  onBlur={() => setActiveField(null)}
-                                  className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 pt-7 pb-2 outline-none focus:border-[#8B1538] focus:ring-1 focus:ring-[#8B1538] transition-all"
-                              />
-                          </div>
-                      </div>
-
-                       {/* Mobile */}
-                      <div className="group relative flex gap-3">
-                           <select className="w-24 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-2 outline-none focus:border-[#8B1538] transition-all text-sm font-medium">
-                              <option>+91</option>
-                              <option>+1</option>
-                              <option>+44</option>
-                           </select>
-                          <div className="relative flex-1">
-                              <label className={cn("absolute left-4 transition-all duration-300 text-gray-400 pointer-events-none", activeField === 'mobile' || formData.mobile ? "top-2 text-[10px] font-bold uppercase tracking-wider text-[#8B1538]" : "top-4 text-sm")}>Mobile Number</label>
-                              <input 
-                                  type="tel"
-                                  name="mobile"
-                                  value={formData.mobile}
-                                  onChange={handleChange}
-                                  onFocus={() => setActiveField('mobile')}
-                                  onBlur={() => setActiveField(null)}
-                                  className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 pt-7 pb-2 outline-none focus:border-[#8B1538] focus:ring-1 focus:ring-[#8B1538] transition-all"
-                              />
-                          </div>
-                      </div>
-
-                      {/* Service Selection */}
-                      <div className="space-y-3">
-                           <label className="text-sm font-semibold text-gray-500 uppercase tracking-wider">I'm interested in...</label>
-                           <div className="flex flex-wrap gap-2">
-                              {['Influencer Marketing', 'Video Editing', 'AI Automation', 'Web Dev', '3D Design'].map(s => (
-                                  <button 
-                                      type="button"
-                                      key={s}
-                                      onClick={() => handleServiceChange(s)}
-                                      className={cn(
-                                          "px-4 py-2 rounded-full text-sm font-medium border transition-all duration-300",
-                                          formData.service === s 
-                                              ? "bg-[#8B1538] border-[#8B1538] text-white shadow-lg shadow-[#8B1538]/20" 
-                                              : "bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300 hover:border-[#8B1538]/50"
-                                      )}
-                                  >
-                                      {s}
-                                  </button>
-                              ))}
-                           </div>
-                      </div>
-
-                      {/* Budget */}
-                       <div className="space-y-3 pt-2">
-                           <label className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Approx. Budget</label>
-                            <div className="grid grid-cols-2 gap-2">
-                              {['₹50k - ₹1L', '₹1L - ₹3L', '₹3L - ₹10L', '₹10L+'].map(b => (
-                                  <button 
-                                      type="button"
-                                      key={b}
-                                      onClick={() => handleBudgetChange(b)}
-                                      className={cn(
-                                          "px-4 py-3 rounded-xl text-sm font-medium border transition-all duration-300",
-                                          formData.budget === b
-                                              ? "bg-black dark:bg-white text-white dark:text-black border-transparent shadow-lg" 
-                                              : "bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300 hover:border-gray-400"
-                                      )}
-                                  >
-                                      {b}
-                                  </button>
-                              ))}
-                           </div>
-                      </div>
-
-                      {/* Message */}
-                      <div className="group relative pt-2">
-                          <label className={cn("absolute left-4 transition-all duration-300 text-gray-400 pointer-events-none", activeField === 'message' || formData.message ? "top-4 text-[10px] font-bold uppercase tracking-wider text-[#8B1538]" : "top-6 text-sm")}>Project Description</label>
-                          <textarea 
-                              name="message"
-                              value={formData.message}
-                              onChange={handleChange}
-                              onFocus={() => setActiveField('message')}
-                              onBlur={() => setActiveField(null)}
-                              rows={4}
-                              className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 pt-8 pb-2 outline-none focus:border-[#8B1538] focus:ring-1 focus:ring-[#8B1538] transition-all resize-none"
-                          />
-                      </div>
-
-                      {/* Submit Button */}
-                      <button 
-                          type="submit" 
-                          disabled={isSubmitting}
-                          className="w-full group relative py-4 bg-[#8B1538] text-white rounded-xl font-bold text-lg overflow-hidden shadow-xl shadow-[#8B1538]/20 hover:shadow-[#8B1538]/40 transition-all duration-300 hover:scale-[1.01]"
-                      >
-                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shine" />
-                          <span className="flex items-center justify-center gap-2">
-                              {isSubmitting ? 'Sending...' : 'Send Message'}
-                              {!isSubmitting && <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform" />}
+              {/* Left: Brand & Info */}
+              <div className="col-span-5 space-y-12 reveal-up">
+                  <div className="space-y-6">
+                      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-50 border border-gray-100 backdrop-blur-md">
+                          <span className="relative flex h-2 w-2">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                           </span>
-                      </button>
+                          <span className="text-xs font-semibold text-gray-600 tracking-widest uppercase">Accepting New Projects</span>
+                      </div>
 
-                  </form>
+                      <h1 className="text-7xl font-bold text-gray-900 leading-[0.9] tracking-tight">
+                          Let's Build <br />
+                          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#8B1538] via-purple-600 to-blue-600">The Future.</span>
+                      </h1>
+
+                      <p className="text-lg text-gray-600 leading-relaxed max-w-md">
+                          We help ambitious brands define the next generation of digital experiences. Ready to start yours?
+                      </p>
+                  </div>
+
+                  <div className="space-y-6">
+                      <a href="mailto:hello@nextchoose.com" className="group flex items-center gap-6 p-4 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all cursor-pointer">
+                          <div className="w-12 h-12 rounded-full bg-[#8B1538] flex items-center justify-center text-white group-hover:scale-110 transition-transform">
+                              <Mail className="w-5 h-5" />
+                          </div>
+                          <div>
+                              <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Email Us</p>
+                              <p className="text-lg text-gray-900 font-medium">hello@nextchoose.com</p>
+                          </div>
+                          <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-[#8B1538] group-hover:translate-x-1 transition-all ml-auto" />
+                      </a>
+
+                      <div className="grid grid-cols-2 gap-4">
+                          <div className="p-4 rounded-2xl bg-white border border-gray-100 shadow-sm">
+                              <Globe className="w-6 h-6 text-blue-600 mb-3" />
+                              <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Global Reach</p>
+                              <p className="text-sm text-gray-900 font-medium">Serving clients worldwide</p>
+                          </div>
+                          <div className="p-4 rounded-2xl bg-white border border-gray-100 shadow-sm">
+                              <Star className="w-6 h-6 text-yellow-500 mb-3" />
+                              <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Excellence</p>
+                              <p className="text-sm text-gray-900 font-medium">Award-winning team</p>
+                          </div>
+                      </div>
+                  </div>
               </div>
-          </div>
+
+              {/* Right: Floating Glass Form */}
+              <div className="col-span-7 reveal-scale">
+                  <div className="relative bg-white/70 backdrop-blur-2xl border border-white/40 rounded-[2.5rem] p-10 shadow-2xl shadow-purple-900/5">
+                      <form onSubmit={handleSubmit} className="space-y-8">
+
+                          <div className="grid grid-cols-2 gap-8">
+                              <div className="group relative">
+                                  <input
+                                      type="text"
+                                      name="name"
+                                      value={formData.name}
+                                      onChange={handleChange}
+                                      placeholder=" "
+                                      className="peer w-full bg-transparent border-b border-gray-200 py-3 text-gray-900 placeholder-transparent focus:border-[#8B1538] focus:outline-none transition-colors"
+                                  />
+                                  <label className="absolute left-0 -top-3.5 text-xs text-gray-500 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-3 peer-focus:-top-3.5 peer-focus:text-xs peer-focus:text-[#8B1538] transition-all cursor-text">
+                                      Your Name
+                                  </label>
+                              </div>
+                              <div className="group relative">
+                                  <input
+                                      type="email"
+                                      name="email"
+                                      value={formData.email}
+                                      onChange={handleChange}
+                                      placeholder=" "
+                                      className="peer w-full bg-transparent border-b border-gray-200 py-3 text-gray-900 placeholder-transparent focus:border-[#8B1538] focus:outline-none transition-colors"
+                                  />
+                                  <label className="absolute left-0 -top-3.5 text-xs text-gray-500 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-3 peer-focus:-top-3.5 peer-focus:text-xs peer-focus:text-[#8B1538] transition-all cursor-text">
+                                      Email Address
+                                  </label>
+                              </div>
+                          </div>
+
+                          <div className="space-y-4">
+                              <label className="text-sm font-medium text-gray-500 uppercase tracking-wider">Service Interest</label>
+                              <div className="flex flex-wrap gap-2">
+                                  {['Influencer Marketing', 'Video Production', 'AI Solutions', 'Web Development', '3D Design'].map(s => (
+                                      <button
+                                          key={s}
+                                          type="button"
+                                          onClick={() => handleServiceChange(s)}
+                                          className={cn(
+                                        "px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300",
+                                        formData.service === s
+                                            ? "bg-[#8B1538] text-white shadow-lg shadow-[#8B1538]/25 scale-105"
+                                            : "bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900"
+                                    )}
+                                      >
+                                          {s}
+                                      </button>
+                                  ))}
+                              </div>
+                          </div>
+
+                          <div className="space-y-4">
+                              <label className="text-sm font-medium text-gray-500 uppercase tracking-wider">Project Budget</label>
+                              <div className="grid grid-cols-4 gap-2">
+                                  {['< ₹1L', '₹1L - 5L', '₹5L - 20L', '₹20L+'].map(b => (
+                                      <button
+                                          key={b}
+                                          type="button"
+                                          onClick={() => handleBudgetChange(b)}
+                                          className={cn(
+                                        "px-2 py-3 rounded-xl text-sm font-medium transition-all duration-300 border",
+                                        formData.budget === b
+                                            ? "bg-gray-900 text-white border-transparent shadow-lg scale-105"
+                                            : "bg-transparent text-gray-500 border-gray-200 hover:border-gray-300 hover:text-gray-900"
+                                    )}
+                                      >
+                                          {b}
+                                      </button>
+                                  ))}
+                              </div>
+                          </div>
+
+                          <div className="group relative mt-8">
+                              <textarea
+                                  name="message"
+                                  rows={3}
+                                  value={formData.message}
+                                  onChange={handleChange}
+                                  placeholder=" "
+                                  className="peer w-full bg-transparent border-b border-gray-200 py-3 text-gray-900 placeholder-transparent focus:border-[#8B1538] focus:outline-none transition-colors resize-none"
+                              />
+                              <label className="absolute left-0 -top-3.5 text-xs text-gray-500 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-3 peer-focus:-top-3.5 peer-focus:text-xs peer-focus:text-[#8B1538] transition-all cursor-text">
+                                  Tell us about your project
+                              </label>
+                          </div>
+
+                          <button
+                              type="submit"
+                              disabled={isSubmitting}
+                              className="w-full py-5 bg-[#050505] text-white rounded-xl font-bold text-lg hover:bg-gray-900 transition-colors shadow-xl flex items-center justify-center gap-2 group"
+                          >
+                              {isSubmitting ? "Sending..." : "Send Message"}
+                              <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform text-[#8B1538]" />
+                          </button>
+
+                      </form>
+                  </div>
+              </div>
 
       </div>
     </div>
   )
 }
+

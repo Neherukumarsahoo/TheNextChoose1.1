@@ -27,12 +27,7 @@ export function AnalyticsDashboard() {
     const [activeVisitors, setActiveVisitors] = useState(124)
 
     // Feature 12: Real-Time Dashboard Simulation
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setActiveVisitors(prev => prev + Math.floor(Math.random() * 5) - 2)
-        }, 3000)
-        return () => clearInterval(interval)
-    }, [])
+
 
     return (
         <div className="space-y-6">

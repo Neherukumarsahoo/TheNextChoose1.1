@@ -19,11 +19,11 @@ type GLTFResult = GLTF & {
     Mat_Front: THREE.MeshStandardMaterial
     Mat_Body: THREE.MeshStandardMaterial
   }
-  animations: GLTFAction[]
+  animations: any[]
 }
 
-export function Model(props: JSX.IntrinsicElements['group']) {
-  const { nodes, materials } = useGLTF('/Donot.glb') as GLTFResult
+export function Model(props: React.ComponentProps<'group'>) {
+  const { nodes, materials } = useGLTF('/Donot.glb') as any
   return (
     <group {...props} dispose={null}>
       <mesh geometry={nodes.Donut_Cartoon.geometry} material={materials.Donut_Material} />

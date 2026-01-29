@@ -28,6 +28,7 @@ model AdminUser {
   workflows              Workflow[]
   campaignTemplates      CampaignTemplate[]
   fileAttachments        FileAttachment[]
+  investments            Investment[]
 }
 
 model Influencer {
@@ -134,24 +135,54 @@ model ContentSubmission {
   @@index([status])
 }
 
+model ManualTransaction {
+  id             String    @id @default(cuid())
+  brandName      String?
+  brandId        String?
+  influencerName String?
+  influencerId   String?
+  totalAmount    Float
+  payoutAmount   Float
+  profit         Float
+  margin         Float
+  notes          String?
+  status         String    @default("PAID")
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  payments       Payment[]
+}
+
 model Payment {
-  id          String        @id @default(cuid())
-  campaignId  String
-  campaign    Campaign      @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  influencerId String?
-  influencer  Influencer?   @relation(fields: [influencerId], references: [id], onDelete: SetNull)
-  type        String        // Was PaymentType
-  amount      Float
-  advance     Float         @default(0)
-  balance     Float         @default(0)
-  status      String        @default("PENDING") // Was PaymentStatus
-  dueDate     DateTime
-  paidDate    DateTime?
-  method      String?       // Bank Transfer, UPI, etc.
-  transactionId String?
-  notes       String?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id                  String             @id @default(cuid())
+  campaignId          String?
+  campaign            Campaign?          @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  influencerId        String?
+  influencer          Influencer?        @relation(fields: [influencerId], references: [id], onDelete: SetNull)
+  manualTransactionId String?
+  manualTransaction   ManualTransaction? @relation(fields: [manualTransactionId], references: [id], onDelete: Cascade)
+  type                String             // Was PaymentType
+  amount              Float
+  advance             Float              @default(0)
+  balance             Float              @default(0)
+  status              String             @default("PENDING") // Was PaymentStatus
+  dueDate             DateTime
+  paidDate            DateTime?
+  method              String?            // Bank Transfer, UPI, etc.
+  transactionId       String?
+  notes               String?
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+}
+
+model Webhook {
+  id        String   @id @default(cuid())
+  url       String
+  event     String
+  secret    String?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model PlatformSettings {
@@ -428,3 +459,20 @@ model NewsletterSubscriber {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model Investment {
+  id          String   @id @default(cuid())
+  amount      Float
+  reason      String
+  description String?
+  date        DateTime
+  createdBy   String
+  creator     AdminUser @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([createdBy])
+  @@index([date])
+}
+
+

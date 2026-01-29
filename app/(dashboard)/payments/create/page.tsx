@@ -20,6 +20,7 @@ async function getCampaigns() {
         orderBy: {
             createdAt: "desc",
         },
+        take: 50,
     })
 }
 

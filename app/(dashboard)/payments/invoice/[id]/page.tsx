@@ -22,15 +22,19 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
 
     if (!payment) return <div>Invoice not found</div>
 
+    const brand = payment.campaign?.brand
+
     const invoiceData = {
         invoiceNumber: `INV-${payment.id.slice(-6).toUpperCase()}`,
         date: payment.createdAt.toLocaleDateString(),
         dueDate: payment.dueDate.toLocaleDateString(),
-        brandName: payment.campaign.brand.name,
-        brandAddress: payment.campaign.brand.city ? `${payment.campaign.brand.city}, ${payment.campaign.brand.country || ''}` : undefined,
+        brandName: brand?.name || "N/A",
+        brandAddress: brand?.city ? `${brand.city}, ${brand.country || ''}` : undefined,
         items: [
             {
-                description: `Campaign Payment: ${payment.campaign.name} (${payment.type})`,
+                description: payment.campaign
+                    ? `Campaign Payment: ${payment.campaign.name} (${payment.type})`
+                    : `Payment: ${payment.type}`,
                 quantity: 1,
                 price: payment.amount
             }

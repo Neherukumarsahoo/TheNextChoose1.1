@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input"
 import { Search } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
-import { useDebounce } from "@/lib/utils" // Assuming this exists or I'll implement debouncing manually
+// import { useDebounce } from "@/lib/utils" // Removed invalid import
 
 export function SearchInput({
     placeholder = "Search...",
@@ -20,6 +20,10 @@ export function SearchInput({
     // Simple debounce implementation inside to avoid dependency issues if utils doesn't have it
     useEffect(() => {
         const timer = setTimeout(() => {
+            // Avoid infinite loop: only navigate if query actually changed
+            const currentQuery = searchParams.get("query") || ""
+            if (currentQuery === value) return
+
             const params = new URLSearchParams(searchParams.toString())
             if (value) {
                 params.set("query", value)

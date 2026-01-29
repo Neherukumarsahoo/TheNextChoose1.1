@@ -8,29 +8,54 @@ import { CampaignKanban } from "@/components/campaigns/CampaignKanban"
 import { CampaignCalendar } from "@/components/campaigns/CampaignCalendar"
 import { CampaignBriefGenerator } from "@/components/campaigns/CampaignBriefGenerator"
 
-async function getCampaigns() {
-    const campaigns = await prisma.campaign.findMany({
-        include: {
-            brand: true,
-            influencers: {
-                include: {
-                    influencer: true,
+interface GetCampaignsParams {
+    page: number
+    limit: number
+}
+
+async function getCampaigns({ page, limit }: GetCampaignsParams) {
+    const skip = (page - 1) * limit
+
+    const [campaigns, total] = await Promise.all([
+        prisma.campaign.findMany({
+            include: {
+                brand: true,
+                influencers: {
+                    include: {
+                        influencer: true,
+                    },
                 },
             },
-        },
-        orderBy: { createdAt: "desc" },
-    })
+            orderBy: { createdAt: "desc" },
+            skip,
+            take: limit,
+        }),
+        prisma.campaign.count()
+    ])
 
     // Serialize dates for Client Components
-    return campaigns.map(c => ({
+    const serializedCampaigns = campaigns.map(c => ({
         ...c,
         startDate: c.startDate.toISOString(), // Convert Date to string
         endDate: c.endDate ? c.endDate.toISOString() : null
     }))
+
+    return { campaigns: serializedCampaigns, total }
 }
 
-export default async function CampaignsPage() {
-    const campaigns = await getCampaigns()
+import { TablePagination } from "@/components/ui/table-pagination"
+
+interface SearchParamsProps {
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}
+
+export default async function CampaignsPage(props: SearchParamsProps) {
+    const searchParams = await props.searchParams
+    const page = Number(searchParams.page) || 1
+    const limit = 10
+
+    const { campaigns, total } = await getCampaigns({ page, limit })
+    const totalPages = Math.ceil(total / limit)
 
     const getStatusColor = (status: string) => {
         switch (status) {
@@ -136,6 +161,16 @@ export default async function CampaignsPage() {
                                 </table>
                             </div>
                         </CardContent>
+                        {totalPages > 1 && (
+                            <div className="p-4 border-t">
+                                <TablePagination
+                                    totalItems={total}
+                                    totalPages={totalPages}
+                                    currentPage={page}
+                                    itemsPerPage={limit}
+                                />
+                            </div>
+                        )}
                     </Card>
                 </TabsContent>
 

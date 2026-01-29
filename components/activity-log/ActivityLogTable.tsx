@@ -39,6 +39,7 @@ interface ActivityLog {
     }
     action: string
     entityType: string
+    entityId: string | null
     entityName: string | null
     oldValue: string | null
     newValue: string | null

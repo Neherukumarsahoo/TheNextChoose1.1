@@ -15,6 +15,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { toast } from "sonner"
+import { useLoading } from "@/components/providers/LoadingProvider"
 
 interface Payment {
     id?: string
@@ -24,10 +25,6 @@ interface Payment {
     advance: string
     balance: string
     status: "PENDING" | "PAID" | "HOLD"
-    dueDate: string
-    dueDate: string
-    method?: string
-    transactionId?: string
     dueDate: string
     method?: string
     transactionId?: string
@@ -54,9 +51,6 @@ export function PaymentForm({ payment, mode, campaigns = [] }: PaymentFormProps)
         dueDate: payment?.dueDate || new Date().toISOString().split('T')[0],
         method: payment?.method || "",
         transactionId: payment?.transactionId || "",
-        dueDate: payment?.dueDate || new Date().toISOString().split('T')[0],
-        method: payment?.method || "",
-        transactionId: payment?.transactionId || "",
         notes: payment?.notes || "",
     })
 
@@ -76,9 +70,12 @@ export function PaymentForm({ payment, mode, campaigns = [] }: PaymentFormProps)
         })
     }
 
+    const { startLoading, stopLoading } = useLoading()
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsLoading(true)
+        startLoading()
 
         try {
             const url = mode === "edit" && payment?.id ? `/api/payments/${payment.id}` : "/api/payments"
@@ -101,10 +98,12 @@ export function PaymentForm({ payment, mode, campaigns = [] }: PaymentFormProps)
                 router.refresh()
             } else {
                 toast.error(`Failed to ${mode === "edit" ? "update" : "create"} payment`)
+                stopLoading()
+                setIsLoading(false)
             }
         } catch (error) {
             toast.error("An error occurred")
-        } finally {
+            stopLoading()
             setIsLoading(false)
         }
     }

@@ -11,14 +11,26 @@ import Link from "next/link"
 import Image from "next/image"
 
 export function ProfilePage() {
-  const { data: session, status, update } = useSession()
+  const { data: session, status, update } = useSession() as any
   const router = useRouter()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
-  const [formData, setFormData] = useState({
+
+  interface ProfileFormData {
+    name: string
+    email: string
+    countryCode: string
+    mobile: string
+    currentPassword: string
+    newPassword: string
+    confirmPassword: string
+    avatarFile: File | null
+  }
+
+  const [formData, setFormData] = useState<ProfileFormData>({
     name: "",
     email: "",
     countryCode: "+91",
@@ -26,7 +38,7 @@ export function ProfilePage() {
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
-    avatarFile: null as File | null,
+    avatarFile: null,
   })
 
   useEffect(() => {

@@ -26,7 +26,8 @@ import {
 } from "@/components/ui/alert-dialog"
 import { toast } from "sonner"
 import { Trash2 } from "lucide-react"
-import { useAutoSave } from "@/hooks/useAutoSave"
+
+import { useLoading } from "@/components/providers/LoadingProvider"
 
 interface Influencer {
     id: string
@@ -56,11 +57,11 @@ export function InfluencerForm({ influencer, mode }: InfluencerFormProps) {
     const [isLoading, setIsLoading] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
 
-    const { data: formData, setData: setFormData, clearDraft } = useAutoSave(`influencer-form-${mode}`, {
+    const [formData, setFormData] = useState({
         name: influencer?.name || "",
         instagramId: influencer?.instagramId || "",
         profileLink: influencer?.profileLink || "",
-        serviceType: influencer?.serviceType || "Influencer Marketing", // Added
+        serviceType: influencer?.serviceType || "Influencer Marketing",
         category: influencer?.category || "",
         city: influencer?.city || "",
         country: influencer?.country || "",
@@ -77,9 +78,12 @@ export function InfluencerForm({ influencer, mode }: InfluencerFormProps) {
         setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }))
     }
 
+    const { startLoading, stopLoading } = useLoading()
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsLoading(true)
+        startLoading()
 
         try {
             const url = mode === "edit" ? `/api/influencers/${influencer?.id}` : "/api/influencers"
@@ -100,18 +104,21 @@ export function InfluencerForm({ influencer, mode }: InfluencerFormProps) {
             })
 
             if (response.ok) {
-                clearDraft() // Clear auto-save
                 toast.success(mode === "edit" ? "Influencer updated successfully!" : "Influencer added successfully!")
+                stopLoading()
+                setIsLoading(false)
                 router.push("/influencers")
-                router.refresh()
             } else {
                 toast.error(`Failed to ${mode === "edit" ? "update" : "add"} influencer`)
+                stopLoading()
+                setIsLoading(false)
             }
         } catch (error) {
             toast.error("An error occurred")
-        } finally {
+            stopLoading()
             setIsLoading(false)
         }
+        // No finally block to stop loading on success
     }
 
     const handleDelete = async () => {

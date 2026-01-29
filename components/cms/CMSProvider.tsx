@@ -33,10 +33,13 @@ export interface CMSConfig {
     logoUrl?: string
     faviconUrl?: string
     brandName?: string
+    brandColor?: string
+    logoType?: 'image_only' | 'image_with_text' | 'text_only'
     
     blogEnabled?: boolean
     blogTitle?: string
     blogSubtitle?: string
+    blogPosts?: any[]
     
     faqEnabled?: boolean
     faqTitle?: string
@@ -54,6 +57,7 @@ export interface CMSConfig {
 
     seoConfig?: any
     mediaAssets?: any[]
+    pricingData?: any[]
 }
 
 const DEFAULT_CMS_CONFIG: CMSConfig = {

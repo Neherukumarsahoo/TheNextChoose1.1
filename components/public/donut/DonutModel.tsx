@@ -15,7 +15,7 @@ interface DonutModelProps {
   autoRotate?: boolean
 }
 
-export function DonutModel({ bodyColor, frontColor, animation = "Idle", ...props }: DonutModelProps & JSX.IntrinsicElements['group']) {
+export function DonutModel({ bodyColor, frontColor, animation = "Idle", ...props }: DonutModelProps & React.ComponentProps<'group'>) {
   const group = useRef<THREE.Group>(null)
   
   // @ts-ignore

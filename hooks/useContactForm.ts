@@ -31,12 +31,19 @@ export function useContactForm() {
     e.preventDefault()
     setIsSubmitting(true)
 
-    // Simulate delay for "super" feeling
-    await new Promise(r => setTimeout(r, 1500))
-
     try {
-      toast.success("Message sent! We'll be in touch instantly.")
-      setFormData({ name: "", email: "", countryCode: "+91", mobile: "", service: "", budget: "", message: "" })
+      const response = await fetch("/api/contact-submissions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
+      })
+
+      if (response.ok) {
+        toast.success("Message sent! We'll be in touch instantly.")
+        setFormData({ name: "", email: "", countryCode: "+91", mobile: "", service: "", budget: "", message: "" })
+      } else {
+        toast.error("Failed to send message. Please try again.")
+      }
     } catch (e) {
       toast.error("Something went wrong.")
     }

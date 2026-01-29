@@ -106,6 +106,13 @@ const DEFAULT_CONFIG = {
         { id: 'contact', label: 'Contact', visible: true },
     ] as LayoutItem[],
 
+    // Banner
+    bannerActive: false,
+    bannerText: 'Welcome to TheNextChoose!',
+    bannerLink: '',
+    bannerBgColor: '#4F46E5',
+    bannerTextColor: '#FFFFFF',
+
     // Pricing
     pricingData: [
         {

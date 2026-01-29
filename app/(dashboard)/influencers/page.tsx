@@ -3,12 +3,14 @@ import { auth } from "@/lib/auth"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { LoadingLink } from "@/components/ui/loading-link"
 import { Plus } from "lucide-react"
 import { canApproveInfluencer } from "@/lib/permissions"
 import { SearchInput } from "@/components/ui/search-input"
 import { TablePagination } from "@/components/ui/table-pagination"
 import { InfluencerStatusFilter } from "@/components/influencers/InfluencerStatusFilter"
 import { Prisma } from "@prisma/client"
+import { approveInfluencer } from "./actions"
 
 // Define the shape of search params (Next.js 15+)
 // However, since we are in a server component in Next 14/15, props.searchParams is a Promise or object depending on version.
@@ -80,12 +82,12 @@ export default async function InfluencersPage(props: SearchParamsProps) {
                         Manage your network of creators
                     </p>
                 </div>
-                <Link href="/influencers/add">
+                <LoadingLink href="/influencers/add">
                     <Button>
                         <Plus className="mr-2 h-4 w-4" />
                         Add Influencer
                     </Button>
-                </Link>
+                </LoadingLink>
             </div>
 
             <Card>
@@ -152,17 +154,11 @@ export default async function InfluencersPage(props: SearchParamsProps) {
                                             )}
                                             <td className="p-3">
                                                 <div className="flex items-center gap-2">
-                                                    <Link href={`/influencers/${influencer.id}`}>
+                                                    <LoadingLink href={`/influencers/${influencer.id}`}>
                                                         <Button variant="ghost" size="sm">Edit</Button>
-                                                    </Link>
+                                                    </LoadingLink>
                                                     {canApprove && !influencer.approved && (
-                                                        <form action={async () => {
-                                                            "use server"
-                                                            await prisma.influencer.update({
-                                                                where: { id: influencer.id },
-                                                                data: { approved: true }
-                                                            })
-                                                        }}>
+                                                        <form action={approveInfluencer.bind(null, influencer.id)}>
                                                             <Button size="sm" variant="outline" className="text-green-600 hover:text-green-700 hover:bg-green-50">
                                                                 Approve
                                                             </Button>

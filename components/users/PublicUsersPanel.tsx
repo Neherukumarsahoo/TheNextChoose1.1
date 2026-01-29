@@ -167,14 +167,14 @@ export function PublicUsersPanel() {
                 <td className="px-4 py-4">
                   <div className="flex gap-2">
                     {user.emailVerified ? (
-                      <CheckCircle className="w-4 h-4 text-green-500" title="Email verified" />
+                      <span title="Email verified"><CheckCircle className="w-4 h-4 text-green-500" /></span>
                     ) : (
-                      <XCircle className="w-4 h-4 text-gray-400" title="Email not verified" />
+                        <span title="Email not verified"><XCircle className="w-4 h-4 text-gray-400" /></span>
                     )}
                     {user.phoneVerified ? (
-                      <CheckCircle className="w-4 h-4 text-green-500" title="Phone verified" />
+                      <span title="Phone verified"><CheckCircle className="w-4 h-4 text-green-500" /></span>
                     ) : (
-                      <XCircle className="w-4 h-4 text-gray-400" title="Phone not verified" />
+                        <span title="Phone not verified"><XCircle className="w-4 h-4 text-gray-400" /></span>
                     )}
                   </div>
                 </td>

@@ -1,6 +1,8 @@
 import { Navbar } from "./Navbar"
 import { HeroSection } from "./HeroSection"
 import { MobileHeroSection } from "./MobileHeroSection"
+import { ProcessTimeline } from "./ProcessTimeline"
+import { QuickContact } from "./QuickContact"
 import { ServicesGrid } from "./ServicesGrid"
 import { Interactive3DSection } from "./Interactive3DSection"
 import { StatsSection } from "./StatsSection"
@@ -15,6 +17,8 @@ export function HomePage() {
       <MobileHeroSection />
       <HeroSection />
       <Interactive3DSection />
+      <ProcessTimeline />
+      <QuickContact />
       <ServicesGrid />
       <StatsSection />
       <TestimonialsSection />
